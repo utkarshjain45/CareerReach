@@ -8,7 +8,7 @@
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg)](https://www.docker.com/)
 
-A modern, production-grade, multi-user web platform designed for job seekers, recruiters, and sales engineers to send personalized, high-deliverability cold recruitment emails through their own connected Gmail accounts.
+A modern, production-grade, multi-user web platform designed for job seekers, recruiters, and sales engineers to send personalized, high-deliverability cold recruitment emails and resume attachments through their own connected Gmail accounts.
 
 ---
 
@@ -29,23 +29,26 @@ A modern, production-grade, multi-user web platform designed for job seekers, re
                      │  │ Contact Import Engine (POI + Column Mapper)       │  │
                      │  ├───────────────────────────────────────────────────┤  │
                      │  │ Template Personalizer & Variable Engine           │  │
+                     │  │ (Merge tags + Candidate Social Link Hyperlinks)   │  │
+                     │  ├───────────────────────────────────────────────────┤  │
+                     │  │ Resume Attachment Service (PDFBox + Sanitizer)    │  │
                      │  ├───────────────────────────────────────────────────┤  │
                      │  │ Safe Background Dispatcher (Virtual Threads +     │  │
                      │  │ Rate Limiter + Transient Exponential Backoff)     │  │
                      │  ├───────────────────────────────────────────────────┤  │
                      │  │ Recovery Listener (Automatic Orphan Healing)      │  │
-                     │  └─────────────────────────┬─────────────────────────┘  │
-                     └─────────────┬──────────────┴───────────────┬────────────┘
-                                   │                              │
-                     JDBC (Pooled) │                              │ OAuth 2.0 / HTTPS
-                                   ▼                              ▼
-                     ┌───────────────────────────┐  ┌───────────────────────────┐
-                     │   PostgreSQL 16 Database  │  │     Google Gmail API      │
-                     │  - Users & Settings       │  │  - `gmail.send` scope     │
-                     │  - Contacts & Statuses    │  │  - User tokens encrypted  │
-                     │  - Campaigns & Recipients │  │    at rest (AES-GCM)      │
-                     │  - Audit Activity Logs    │  └───────────────────────────┘
-                     └───────────────────────────┘
+                     │  └──────┬──────────────────┬─────────────────┬───────┘  │
+                     └─────────┼──────────────────┼─────────────────┼──────────┘
+                               │                  │                 │
+                 JDBC (Pooled) │   OAuth 2.0 / API│   REST / S3 API │
+                               ▼                  ▼                 ▼
+                 ┌───────────────────┐  ┌───────────────────┐  ┌───────────────────┐
+                 │  PostgreSQL 16    │  │ Google Gmail API  │  │ Supabase Storage  │
+                 │ - Users & Settings│  │ - `gmail.send`    │  │ - Resumes/PDFs    │
+                 │ - Contacts        │  │ - Tokens AES-GCM  │  │ - Multi-tenant    │
+                 │ - Campaigns & Logs│  │   encrypted at    │  │   isolated paths  │
+                 │ - Template Meta   │  │   rest            │  │                   │
+                 └───────────────────┘  └───────────────────┘  └───────────────────┘
 ```
 
 ---
@@ -54,8 +57,8 @@ A modern, production-grade, multi-user web platform designed for job seekers, re
 
 ### 1. Database-Driven Analytics Dashboard
 * **Real-time Metrics**: Total Contacts, Active Campaigns, Total Emails Sent, Failed Deliveries, and Global Success Rate %.
-* **Recent Campaigns List**: Status badges, recipient volume, deliverability rates, and quick navigation.
-* **Activity Audit Feed**: Real-time event log tracking user actions across authentication, contact imports, Gmail integrations, and campaign lifecycles.
+* **Recent Campaigns List**: Status badges, recipient volume, deliverability rates, and instant execution controls.
+* **Quick Action Hub**: Direct shortcuts for uploading contacts, creating outreach templates, and launching campaigns.
 
 ### 2. Contact Import Wizard
 * **Supported Formats**: Excel (`.xlsx`, `.xls`) and CSV (`.csv`).
@@ -65,35 +68,40 @@ A modern, production-grade, multi-user web platform designed for job seekers, re
 
 ### 3. Contact Management & Unsubscribe Handling
 * **Status Lifecycle**: `LEAD`, `CONTACTED`, `REPLIED`, `BOUNCED`, `UNSUBSCRIBED`.
-* **Opt-Out Compliance**: Built-in unsubscribe toggle per contact. Unsubscribed contacts are automatically prevented from receiving outreach across all future campaigns.
-* **Automated Email Opt-Out Footers**: Configurable footer injection in emails giving recipients an effortless unsubscribe mechanism.
+* **Opt-Out Compliance**: Built-in unsubscribe toggle per contact. Unsubscribed contacts are automatically excluded from all future outreach campaigns.
+* **Batch Operations**: Bulk delete, status filtering, search by name, email, or company.
 
 ### 4. Template Studio & Smart Variable Engine
-* **Dynamic Merge Tags**: `{{name}}`, `{{company}}`, `{{position}}`, `{{email}}`, and custom fallback values.
-* **Syntax & Variable Validation**: Live detection of undefined or misspelled variables with inline warnings.
-* **Live Personalization Preview**: Render realistic subject and body previews using sample or actual contact records.
-* **Character Counters & Search**: Real-time character counts, instant template search, and one-click template duplication.
+* **Dynamic Merge Tags**: `{{name}}`, `{{company}}`, `{{position}}`, `{{email}}`, with fallback handling.
+* **Social Link Hyperlinks**: Insert candidate profile tags like `{{github}}`, `{{leetcode}}`, `{{linkedin}}`, `{{portfolio}}`, etc., which are dynamically transformed into rich HTML hyperlinks in the final email.
+* **Live Personalization Preview**: Render realistic subject and body previews against live contact data.
+* **Character Counters & Duplication**: Real-time counter and one-click template cloning.
 
-### 5. Campaign Safety & Duplicate Protection
-* **Pre-Send Duplicate Detection**: Scans candidate recipients against prior campaigns using the same template or any previous campaign.
-* **One-Click Duplicate Skipping**: Default option to safely skip already contacted recipients to protect domain deliverability and sender reputation.
+### 5. Resume & PDF Attachment System
+* **Cloud Storage**: Seamless integration with Supabase Storage for secure cloud persistence.
+* **PDF Verification**: Server-side inspection via Apache PDFBox ensuring valid PDF headers (`%PDF-`), non-corrupt files, and safe byte content.
+* **Email Attachment**: Direct attachment of resume PDFs to outreach emails dispatched via the Gmail API.
+
+### 6. Campaign Safety & Duplicate Protection
+* **Pre-Send Duplicate Detection**: Scans candidate recipients against prior campaigns using the same template or any previous outreach.
+* **One-Click Duplicate Skipping**: Automatically skip already contacted recipients to protect domain deliverability and sender reputation.
 * **4-Step Campaign Creation Wizard**:
   1. *Basics*: Campaign title and sending window.
   2. *Template Selection*: Live template preview with duplicate statistics.
   3. *Recipient Selection*: Target list filtering by status with instant duplicate warnings.
   4. *Pre-Flight Safety Check*: Summary verification confirming connected Gmail health, valid recipients, skipped duplicates, and rate configurations.
 
-### 6. Reliable Background Email Dispatcher
-* **Thread-Safe Asynchronous Dispatching**: Uses Spring Task Execution with controlled batch intervals (default 5–15s delays) to stay within Google rate limits.
+### 7. Reliable Background Email Dispatcher
+* **Thread-Safe Asynchronous Dispatching**: Controlled batch intervals with configurable delays and random jitter to stay safely within Google rate limits.
 * **Transient Error Handling**: Automatic retry with exponential backoff on Google `429 Too Many Requests` and `503 Service Unavailable` responses.
 * **Safe Restart Recovery (`CampaignRecoveryListener`)**: On server restart or crash, any orphaned `RUNNING` or `QUEUED` campaigns are automatically transitioned to `PAUSED`, and stranded `SENDING` recipients are reset to `PENDING` so no emails are lost or double-sent.
 * **Live Execution Control**: Real-time Pause, Resume, and Cancel actions for any active campaign.
 
-### 7. User Settings & Account Controls
+### 8. User Settings & Account Controls
 * **Profile Management**: Update display name and change password securely with BCrypt validation.
-* **Gmail Integration Hub**: Connect, test connection status, and securely disconnect Gmail accounts.
-* **Sending Preferences**: Configure default sending delay between emails, daily sending limits, and automatic opt-out footer toggles.
-* **Full Audit Log**: Filterable chronological history of all user activities with IP tracking and entity references.
+* **Candidate Social Profiles**: Store links to GitHub, LeetCode, LinkedIn, Portfolio, Codeforces, Twitter/X, and custom profiles.
+* **Gmail Integration Hub**: Connect, verify connection status, and securely disconnect Gmail accounts via OAuth 2.0.
+* **Sending Preferences**: Configure safe delivery rate limits (1–500 emails/campaign) and delay intervals (1000–30000ms).
 
 ---
 
@@ -102,8 +110,8 @@ A modern, production-grade, multi-user web platform designed for job seekers, re
 * **Zero Client-Side Token Exposure**: Google OAuth refresh tokens and access tokens are never transmitted to the browser or logged.
 * **AES-256-GCM Token Encryption**: All stored OAuth tokens are encrypted at rest using AES-256 in Galois/Counter Mode with unique IVs.
 * **Stateless JWT Authentication**: Passwords hashed with BCrypt (strength 10). Access tokens signed with HMAC-SHA256.
-* **Strict Tenant Isolation**: All database queries and modifications enforce `WHERE user_id = :userId` validation.
-* **OWASP Best Practices**: Input validation, parameterized JPA queries, CORS restriction, and secure HTTP response headers.
+* **Strict Tenant Isolation**: All database queries, file storage operations, and campaigns enforce strict user ownership validation.
+* **File Validation**: Strict multi-layer inspection including MIME checks and Apache PDFBox validation.
 
 ---
 
@@ -114,7 +122,8 @@ A modern, production-grade, multi-user web platform designed for job seekers, re
 | **Backend Framework** | Java 21, Spring Boot 3.4.2 |
 | **Data Access** | Spring Data JPA, Hibernate, HikariCP |
 | **Database** | PostgreSQL 16 |
-| **File Processing** | Apache POI 5.2.5 (Excel), Apache Commons CSV 1.10.0 |
+| **File Processing** | Apache POI 5.2.5 (Excel), Apache Commons CSV 1.10.0, Apache PDFBox 3.0.4 |
+| **Cloud Storage** | Supabase Cloud Storage (S3 / REST) |
 | **Security** | Spring Security 6, JJWT 0.12.5, AES-256-GCM |
 | **Mail & APIs** | Google API Client 2.4.0, Google OAuth Client 1.35.0, Gmail API v1 |
 | **Frontend Framework** | React 18.3, Vite 5.4, TypeScript 5.5 |
@@ -130,6 +139,7 @@ A modern, production-grade, multi-user web platform designed for job seekers, re
 * **Java**: JDK 21+
 * **Node.js**: 20.x+ and `npm`
 * **PostgreSQL**: 16+ running locally on port 5432
+* **Supabase**: Project URL and service role key (for resume storage)
 * **Google Cloud Console**: OAuth 2.0 Web Application credentials
 
 ### 1. Database Setup
@@ -161,7 +171,7 @@ To enable Gmail OAuth 2.0:
 
 ### 3. Backend Setup
 
-Create a `.env` file or export environment variables in your terminal:
+Create a `.env` file in `backend/` or export environment variables:
 ```bash
 # Database Configuration
 DB_HOST=localhost
@@ -178,6 +188,11 @@ TOKEN_ENCRYPTION_SECRET=mySuperSecretEncryptionKey32Chars!
 GOOGLE_CLIENT_ID=your-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-client-secret
 GOOGLE_REDIRECT_URI=http://localhost:5173/settings
+
+# Supabase Storage Configuration
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+SUPABASE_BUCKET_RESUMES=careerreach-resumes
 ```
 
 Run the backend via Maven:
@@ -209,6 +224,9 @@ export GOOGLE_CLIENT_ID="your_google_client_id"
 export GOOGLE_CLIENT_SECRET="your_google_client_secret"
 export GOOGLE_REDIRECT_URI="http://localhost/settings"
 export TOKEN_ENCRYPTION_SECRET="mySuperSecretEncryptionKey32Chars!"
+export SUPABASE_URL="https://your-project.supabase.co"
+export SUPABASE_SERVICE_ROLE_KEY="your-supabase-service-role-key"
+export SUPABASE_BUCKET_RESUMES="careerreach-resumes"
 
 # 2. Build and run containers
 docker-compose up --build -d
@@ -233,11 +251,11 @@ docker-compose down
 cd backend
 ./mvnw test
 ```
-Runs comprehensive test suites covering:
-* Application Context Bootstrapping
+Runs test suites covering:
 * Authentication & JWT Generation
 * Contact Import & Excel/CSV Parsing
-* Variable Substitution & Template Rendering
+* Variable Substitution & Candidate Social Link Hyperlink Rendering
+* PDF Validation & Magic Byte Checking
 * Transient Error Retries & Campaign Dispatch Logic
 
 ### Frontend Production Build Test
@@ -256,13 +274,17 @@ Executes TypeScript compilation and bundle packaging via Vite.
 | **POST** | `/api/auth/register` | Register new user account |
 | **POST** | `/api/auth/login` | Authenticate and obtain JWT token |
 | **GET** | `/api/auth/me` | Fetch authenticated user profile |
-| **GET** | `/api/dashboard/stats` | Database-driven KPIs, recent campaigns & activities |
+| **GET** | `/api/dashboard/stats` | Real-time KPIs and recent campaigns |
 | **POST** | `/api/contacts/import/preview` | Upload file for column detection & 10-row sample |
 | **POST** | `/api/contacts/import` | Execute contact import with custom column mapping |
 | **GET** | `/api/contacts` | Paginated contact list with search & status filters |
 | **PATCH**| `/api/contacts/{id}/status` | Update contact status or unsubscribe |
 | **GET** | `/api/templates` | Search and list personalized email templates |
 | **POST** | `/api/templates/{id}/duplicate` | Clone template with new name |
+| **POST** | `/api/attachments` | Upload resume/PDF attachment to Supabase Storage |
+| **GET** | `/api/attachments` | List all user attachments |
+| **GET** | `/api/attachments/{id}/download` | Download attachment PDF file |
+| **DELETE**| `/api/attachments/{id}` | Delete resume attachment from storage and DB |
 | **POST** | `/api/campaigns/check-duplicates` | Analyze duplicate recipients before campaign launch |
 | **POST** | `/api/campaigns/validate-preflight`| Pre-flight sanity check on Gmail, templates & recipients |
 | **POST** | `/api/campaigns` | Create and initialize outreach campaign |
@@ -273,8 +295,8 @@ Executes TypeScript compilation and bundle packaging via Vite.
 | **GET** | `/api/oauth/gmail/url` | Generate Google OAuth authorization URL |
 | **POST** | `/api/oauth/gmail/callback` | Exchange auth code for tokens and save encrypted |
 | **DELETE**| `/api/oauth/gmail/disconnect` | Revoke tokens and disconnect Gmail |
-| **GET** | `/api/settings` | Retrieve user sending preferences |
-| **PUT** | `/api/settings` | Update sending delay, daily limits, opt-out toggles |
+| **GET** | `/api/settings` | Retrieve sending preferences and candidate social links |
+| **PUT** | `/api/settings` | Update sending delay, daily limits, and candidate social links |
 
 ---
 
