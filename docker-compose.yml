@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: careerreach_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-careerreach_db}
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_NAME:-careerreach_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - careerreach-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: careerreach-backend:latest
+    container_name: careerreach_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-careerreach_db}
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-postgres}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-postgres}
+      JWT_SECRET: ${JWT_SECRET:-9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-86400000}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-placeholder_client_id}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-placeholder_client_secret}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://localhost:5173/settings}
+      TOKEN_ENCRYPTION_SECRET: ${TOKEN_ENCRYPTION_SECRET:-mySuperSecretEncryptionKey32Chars!}
+      SUPABASE_URL: ${SUPABASE_URL:-https://your-project.supabase.co}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY:-your-secret-key}
+      SUPABASE_BUCKET: ${SUPABASE_BUCKET:-careerreach-resumes}
+      SUPABASE_MAX_FILE_SIZE: ${SUPABASE_MAX_FILE_SIZE:-5242880}
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/api/health || exit 0"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - careerreach-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: careerreach-frontend:latest
+    container_name: careerreach_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "5173:80"
+    networks:
+      - careerreach-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  careerreach-network:
+    driver: bridge
