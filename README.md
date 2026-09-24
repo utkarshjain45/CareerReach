@@ -115,12 +115,12 @@ Save your profile links once in **Settings** (`GitHub`, `LeetCode`, `Portfolio`,
 
 ```mermaid
 graph TD
-    A[01. Ingest Recruiter List] -->|Upload .xlsx or .csv| B[Smart Column Mapper & Duplicate Filter]
-    B --> C[02. Draft Pitch & Variables]
-    C -->|Use {{name}}, {{company}}, {{github}}, {{leetcode}}| D[Resume Cloud Vault & Attachment]
-    D --> E[03. Link Gmail via Google OAuth 2.0]
-    E -->|AES-256 Encrypted Tokens| F[04. Safe Throttled Launch]
-    F -->|15s-45s Randomized Intervals| G[Delivered Straight to Primary Inbox]
+    A["01. Ingest Recruiter List"] -->|"Upload .xlsx or .csv"| B["Smart Column Mapper & Duplicate Filter"]
+    B --> C["02. Draft Pitch & Variables"]
+    C -->|"Dynamic tags: name, company, github, leetcode"| D["Resume Cloud Vault & Attachment"]
+    D --> E["03. Link Gmail via Google OAuth 2.0"]
+    E -->|"AES-256 Encrypted Tokens"| F["04. Safe Throttled Launch"]
+    F -->|"15s-45s Randomized Intervals"| G["Delivered Straight to Primary Inbox"]
 ```
 
 1. **Import Contacts:** Drop in a list of hiring managers. Map names, emails, and company titles with automatic syntax and duplicate validation.
