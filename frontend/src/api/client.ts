@@ -40,6 +40,8 @@ apiClient.interceptors.response.use(
       if (!isAuthEndpoint) {
         localStorage.removeItem('rm_token');
         localStorage.removeItem('rm_user');
+        sessionStorage.removeItem('rm_token');
+        sessionStorage.removeItem('rm_user');
         if (window.location.pathname !== '/login' && window.location.pathname !== '/' && window.location.pathname !== '/register') {
           window.location.href = '/login';
         }
