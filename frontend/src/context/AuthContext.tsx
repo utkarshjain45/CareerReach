@@ -135,7 +135,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     clearAuth();
     setToken(null);
     setUser(null);
-    window.location.href = '/login';
+    if (window.location.pathname !== '/login') {
+      window.location.replace('/login');
+    }
   }, []);
 
   return (
