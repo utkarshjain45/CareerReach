@@ -172,10 +172,10 @@ export const ContactsPage: React.FC = () => {
   return (
     <div className="space-y-5 max-w-6xl">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Contacts</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Contacts</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Manage recruiter lists, inspect deliverability statuses, and import spreadsheets.
           </p>
         </div>
@@ -184,14 +184,16 @@ export const ContactsPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
+            pill
             onClick={() => setUploadModalOpen(true)}
             icon={<UploadCloud className="w-3.5 h-3.5 text-brand-600" />}
           >
             Import File
           </Button>
           <Button
-            variant="primary"
+            variant="coral"
             size="sm"
+            pill
             onClick={openCreateModal}
             icon={<Plus className="w-3.5 h-3.5" />}
           >
@@ -201,7 +203,7 @@ export const ContactsPage: React.FC = () => {
       </div>
 
       {/* Filter and Bulk Action Bar */}
-      <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="glass-panel p-3.5 rounded-2xl shadow-card flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex flex-col sm:flex-row items-center gap-2.5 flex-1">
           {/* Search */}
           <div className="w-full sm:w-80">
@@ -225,7 +227,7 @@ export const ContactsPage: React.FC = () => {
                   setStatusFilter(e.target.value);
                   setCurrentPage(0);
                 }}
-                className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-colors focus:outline-none focus:ring-2 focus:border-brand-500 focus:ring-brand-100 cursor-pointer"
+                className="w-full rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-700 transition-all focus:outline-none focus:ring-4 focus:ring-brand-500/15 cursor-pointer"
               >
                 <option value="ALL">All Statuses</option>
                 <option value="READY">READY (Eligible)</option>
@@ -240,13 +242,14 @@ export const ContactsPage: React.FC = () => {
 
         {/* Bulk Actions */}
         {selectedIds.length > 0 && (
-          <div className="flex items-center gap-2.5 bg-brand-50/80 border border-brand-200 px-3 py-1.5 rounded-lg">
-            <span className="text-xs font-semibold text-brand-900">
+          <div className="flex items-center gap-2.5 bg-brand-50/90 border border-brand-200 px-3.5 py-2 rounded-xl">
+            <span className="text-xs font-bold text-brand-900">
               {selectedIds.length} selected
             </span>
             <Button
               variant="danger"
               size="xs"
+              pill
               onClick={() => setBulkDeleteConfirmOpen(true)}
               icon={<Trash2 className="w-3 h-3" />}
             >
@@ -257,7 +260,7 @@ export const ContactsPage: React.FC = () => {
       </div>
 
       {/* Main Contacts Table */}
-      <div className="bg-white rounded-xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div className="glass-panel rounded-2xl shadow-card overflow-hidden">
         {loading ? (
           <TableSkeleton rows={6} cols={7} />
         ) : contacts.length === 0 ? (

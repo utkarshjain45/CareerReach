@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import {
   Mail,
@@ -7,195 +7,465 @@ import {
   FileSpreadsheet,
   Sliders,
   CheckCircle2,
-  BarChart3,
-  Layers,
   Sparkles,
   Lock,
   RefreshCw,
+  Send,
+  Paperclip,
+  Check,
+  ChevronRight,
+  Zap,
+  Clock,
+  Cpu,
+  Link2,
+  Code2,
+  Globe,
+  ExternalLink,
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
+import { MarketingHeader } from '../components/layout/MarketingHeader';
+import { MarketingFooter } from '../components/layout/MarketingFooter';
 
 export const LandingPage: React.FC = () => {
   const [searchParams] = useSearchParams();
+
+  // Interactive Hero Simulator States
+  const [selectedProfile, setSelectedProfile] = useState<'stripe' | 'figma' | 'anthropic'>('stripe');
+  const [sendingState, setSendingState] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const [activeMode, setActiveMode] = useState<'raw' | 'composed'>('composed');
 
   // If redirected from Google OAuth to root domain, forward client-side to /settings
   if (searchParams.get('code') || searchParams.get('error')) {
     return <Navigate to={`/settings${window.location.search}`} replace />;
   }
 
+  const profiles = {
+    stripe: {
+      name: 'Sarah Chen',
+      role: 'Head of Tech Recruiting',
+      company: 'Stripe',
+      email: 'sarah.chen@stripe.com',
+      avatarBg: 'from-violet-500 to-indigo-600',
+      subject: 'Senior Full Stack Engineer opportunities at Stripe',
+      opening: "Hi Sarah, saw your post regarding Stripe's developer infrastructure scaling. With 4+ years architecting high-throughput distributed APIs, I would love to connect for high-impact engineering roles.",
+    },
+    figma: {
+      name: 'Marcus Vance',
+      role: 'Principal Talent Partner',
+      company: 'Figma',
+      email: 'm.vance@figma.com',
+      avatarBg: 'from-rose-500 to-orange-500',
+      subject: 'Product Engineering roles on Figma Editor Core',
+      opening: "Hey Marcus, huge fan of Figma's recent canvas performance updates. I specialize in React, WebGL, and state synchronization, and I'd love to share my portfolio with your team.",
+    },
+    anthropic: {
+      name: 'Elena Rostova',
+      role: 'Lead Engineering Recruiter',
+      company: 'Anthropic',
+      email: 'elena@anthropic.com',
+      avatarBg: 'from-amber-500 to-yellow-600',
+      subject: 'Frontier AI System Engineering — Alex Morgan',
+      opening: "Hello Elena, I've been following Anthropic's alignment research and infrastructure work closely. I've led platform reliability projects and would value 10 minutes to discuss current openings.",
+    },
+  };
+
+  const current = profiles[selectedProfile];
+
+  const handleSimulateSend = () => {
+    if (sendingState !== 'idle') return;
+    setSendingState('sending');
+    setTimeout(() => {
+      setSendingState('sent');
+      setTimeout(() => setSendingState('idle'), 4000);
+    }, 1200);
+  };
+
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col selection:bg-brand-600 selection:text-white">
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 h-16 sm:h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-lg bg-brand-600 flex items-center justify-center text-white shadow-xs group-hover:bg-brand-700 transition-colors">
-              <Mail className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-lg font-bold tracking-tight text-slate-900 block leading-tight">
-                Career<span className="text-brand-600">Reach</span>
-              </span>
-              <span className="text-[10px] font-medium text-slate-400 hidden sm:block">
-                Smarter outreach. Better opportunities.
-              </span>
-            </div>
-          </Link>
+    <div className="min-h-screen bg-[#FBFBFA] text-slate-800 flex flex-col selection:bg-brand-500 selection:text-white relative overflow-hidden">
+      {/* Ambient background blur orbs for depth and warm modern aesthetic */}
+      <div className="ambient-glow w-[550px] h-[550px] bg-brand-200/40 -top-40 -left-40" />
+      <div className="ambient-glow w-[550px] h-[550px] bg-coral-200/30 -top-20 -right-40" />
 
-          {/* Nav links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
-            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">
-              How It Works
-            </a>
-            <a href="#features" className="hover:text-slate-900 transition-colors">
-              Features
-            </a>
-            <a href="#security" className="hover:text-slate-900 transition-colors">
-              Security &amp; Privacy
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="text-sm font-semibold text-slate-600 hover:text-slate-900 transition-colors px-3 py-2"
-            >
-              Sign In
-            </Link>
-            <Link to="/register">
-              <Button variant="primary" size="sm" icon={<ArrowRight className="w-4 h-4" />}>
-                Get Started
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* Floating Modern Pill Header */}
+      <MarketingHeader activePage="home" />
 
       {/* Hero Section */}
-      <section className="relative pt-16 pb-20 overflow-hidden bg-gradient-to-b from-slate-50/80 via-white to-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          {/* Tagline pill */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/80 text-brand-700 text-xs font-semibold mb-6">
-            <Sparkles className="w-3.5 h-3.5 text-brand-600" />
-            <span>Smarter outreach. Better opportunities.</span>
-          </div>
+      <section className="relative pt-6 sm:pt-10 lg:pt-14 pb-10 sm:pb-14 px-6 text-center max-w-5xl mx-auto z-10">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.12] max-w-4xl mx-auto">
+          Skip the job board black hole.{' '}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-indigo-600 to-coral-500">
+            Reach decision makers directly.
+          </span>
+        </h1>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 max-w-4xl mx-auto leading-[1.12]">
-            Turn job outreach{' '}
-            <span className="text-brand-600">
-              into a workflow.
-            </span>
-          </h1>
+        <p className="mt-5 font-body font-normal text-slate-600 text-base sm:text-[17px] max-w-2xl mx-auto leading-relaxed">
+          Connect your personal Gmail, upload hiring manager contacts, and dispatch personalized outreach with your resume attached directly to primary inboxes.
+        </p>
 
-          <p className="mt-6 text-base sm:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-normal">
-            CareerReach empowers you to import recruiter contacts from spreadsheets, craft personalized
-            cold-email templates, connect your Gmail securely via OAuth, and launch controlled outreach sequences.
-          </p>
+        {/* CTA Button Group */}
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link to="/register">
+            <Button
+              size="lg"
+              variant="coral"
+              pill
+              icon={<ArrowRight className="w-4 h-4" />}
+              className="w-full sm:w-auto px-7 py-3 font-bold text-base"
+            >
+              Start Reaching Out Free
+            </Button>
+          </Link>
+          <a href="#simulator">
+            <Button
+              size="lg"
+              variant="outline"
+              pill
+              icon={<Sparkles className="w-4 h-4 text-brand-600" />}
+              className="w-full sm:w-auto px-6 py-3 text-base"
+            >
+              Try Live Simulator
+            </Button>
+          </a>
+        </div>
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <Link to="/register">
-              <Button size="lg" variant="primary" icon={<ArrowRight className="w-4 h-4" />}>
-                Get Started
-              </Button>
-            </Link>
-            <a href="#how-it-works">
-              <Button size="lg" variant="outline">
-                See How It Works
-              </Button>
-            </a>
-          </div>
-
-          {/* Trust pills */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-slate-500">
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Official Gmail OAuth 2.0
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Zero Password Retention
-            </span>
-            <span className="flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Pre-Flight Duplicate Protection
-            </span>
-          </div>
-
-          {/* Tasteful Product/Dashboard Visual */}
-          <div className="mt-14 max-w-5xl mx-auto rounded-xl border border-slate-200/90 bg-white p-4 sm:p-6 shadow-sm text-left">
-            {/* Window header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-slate-300" />
-                <div className="w-3 h-3 rounded-full bg-slate-300" />
-                <div className="w-3 h-3 rounded-full bg-slate-300" />
-                <span className="text-xs font-mono text-slate-400 ml-2">careerreach.app/campaigns/overview</span>
-              </div>
-              <span className="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200/60">
-                Connected: alex@company.com
+        {/* 3-Box Highlight Grid */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-3.5 max-w-5xl mx-auto text-left">
+          {/* Box 1: 85% Time Savings */}
+          <div className="p-3.5 sm:p-4 rounded-2xl glass-panel shadow-xs flex items-start gap-3.5 text-xs text-slate-600">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-sm">
+              85%
+            </div>
+            <div>
+              <span className="font-bold text-slate-900 block text-xs sm:text-sm">
+                Cuts manual outreach time by over 85%
+              </span>
+              <span className="text-slate-500 text-xs mt-0.5 block leading-relaxed">
+                Automating personalized cold emails replaces 4+ hours of manual one-by-one drafting with a single 3-minute sequence.
               </span>
             </div>
+          </div>
 
-            {/* Visual content: Dashboard layout mockup */}
-            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* Campaign status preview card */}
-              <div className="md:col-span-2 p-5 bg-slate-50/70 rounded-lg border border-slate-200/70 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Active Campaign</span>
-                    <h4 className="text-sm font-bold text-slate-900 mt-0.5">Software Engineering Outreach — Q3</h4>
+          {/* Box 2: GitHub & LeetCode Variable Links Automation */}
+          <div className="p-3.5 sm:p-4 rounded-2xl glass-panel shadow-xs flex items-start gap-3.5 text-xs text-slate-600 border border-brand-100/60">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-600 to-coral-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Link2 className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-bold text-slate-900 block text-xs sm:text-sm">
+                Attach GitHub, LeetCode &amp; Platform Links via Variables
+              </span>
+              <span className="text-slate-500 text-xs mt-0.5 block leading-relaxed">
+                Save your links once in Settings. Use <code className="text-brand-600 font-bold">&#123;&#123;github&#125;&#125;</code> and <code className="text-amber-600 font-bold">&#123;&#123;leetcode&#125;&#125;</code> so you never have to copy-paste URLs every time.
+              </span>
+            </div>
+          </div>
+
+          {/* Box 3: Direct Gmail Inbox & Resume Attachment */}
+          <div className="p-3.5 sm:p-4 rounded-2xl glass-panel shadow-xs flex items-start gap-3.5 text-xs text-slate-600 border border-emerald-100/60">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-coral-500 to-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <ShieldCheck className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-bold text-slate-900 block text-xs sm:text-sm">
+                Direct Gmail Primary Delivery
+              </span>
+              <span className="text-slate-500 text-xs mt-0.5 block leading-relaxed">
+                Dispatches through your authenticated personal mailbox with your resume PDF attached directly, landing safely in primary inboxes.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Social Proof Avatars & Reassurance */}
+        <div className="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3 text-xs sm:text-sm text-slate-500 font-medium">
+          <div className="flex -space-x-2 overflow-hidden items-center">
+            <div className="inline-flex h-8 w-8 rounded-full ring-2 ring-white bg-gradient-to-tr from-indigo-500 to-purple-600 text-white font-bold items-center justify-center text-[10px] shadow-xs">
+              AK
+            </div>
+            <div className="inline-flex h-8 w-8 rounded-full ring-2 ring-white bg-gradient-to-tr from-rose-500 to-orange-500 text-white font-bold items-center justify-center text-[10px] shadow-xs">
+              SL
+            </div>
+            <div className="inline-flex h-8 w-8 rounded-full ring-2 ring-white bg-gradient-to-tr from-emerald-500 to-teal-600 text-white font-bold items-center justify-center text-[10px] shadow-xs">
+              RJ
+            </div>
+            <div className="inline-flex h-8 w-8 rounded-full ring-2 ring-white bg-gradient-to-tr from-amber-500 to-yellow-600 text-white font-bold items-center justify-center text-[10px] shadow-xs">
+              MC
+            </div>
+          </div>
+          <span>
+            Designed to help you connect with hiring teams at companies like{' '}
+            <strong className="text-slate-800 font-semibold">Stripe, Figma, and Google</strong>
+          </span>
+        </div>
+      </section>
+
+      {/* Interactive Hero Simulator Section */}
+      <section id="simulator" className="px-4 sm:px-6 pb-10 sm:pb-12 max-w-6xl mx-auto w-full z-10 scroll-mt-20">
+        <div className="glass-panel rounded-3xl p-6 sm:p-9 shadow-card border border-white/80 relative">
+          {/* Top bar with Clean Tabs */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-100">
+            <div>
+              <h3 className="text-xl font-bold text-slate-900">
+                Interactive Outreach Preview
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                Compare your raw template during creation with the final composed email sent to hiring managers
+              </p>
+            </div>
+
+            {/* Mode Switcher: Raw Template vs Composed Email */}
+            <div className="inline-flex items-center p-1 bg-slate-100/90 rounded-2xl text-xs font-semibold shrink-0 self-start md:self-auto">
+              <button
+                onClick={() => setActiveMode('raw')}
+                className={`px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  activeMode === 'raw'
+                    ? 'bg-white text-brand-600 shadow-xs font-bold'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Code2 className="w-3.5 h-3.5 text-brand-600" />
+                Raw Template
+              </button>
+              <button
+                onClick={() => setActiveMode('composed')}
+                className={`px-3.5 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
+                  activeMode === 'composed'
+                    ? 'bg-white text-slate-900 shadow-xs font-bold'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                <Mail className="w-3.5 h-3.5 text-coral-500" />
+                Composed Email
+              </button>
+            </div>
+          </div>
+
+          {/* Interactive Email Canvas */}
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            {/* Left: Email Composer Preview */}
+            <div className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-xs border border-slate-100/80 space-y-4">
+              {/* Context Bar depending on Mode */}
+              {activeMode === 'composed' ? (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-100 text-xs">
+                  <span className="text-slate-500 font-medium flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-coral-500 shrink-0" />
+                    Previewing personalized draft for:
+                  </span>
+                  <div className="inline-flex items-center gap-1.5 p-1 bg-slate-100 rounded-xl self-start sm:self-auto">
+                    {(['stripe', 'figma', 'anthropic'] as const).map((key) => (
+                      <button
+                        key={key}
+                        onClick={() => setSelectedProfile(key)}
+                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                          selectedProfile === key
+                            ? 'bg-white text-slate-900 shadow-xs'
+                            : 'text-slate-500 hover:text-slate-800'
+                        }`}
+                      >
+                        {key === 'stripe' ? 'Stripe' : key === 'figma' ? 'Figma' : 'Anthropic'}
+                      </button>
+                    ))}
                   </div>
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    Running
+                </div>
+              ) : (
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 text-xs">
+                  <span className="text-slate-500 font-medium flex items-center gap-1.5">
+                    <Code2 className="w-3.5 h-3.5 text-brand-600 shrink-0" />
+                    Template creation draft with variables:
+                  </span>
+                  <span className="text-[11px] font-mono font-bold text-brand-600 bg-brand-50 px-2 py-0.5 rounded-lg border border-brand-100">
+                    &#123;&#123;name&#125;&#125;, &#123;&#123;company&#125;&#125;, &#123;&#123;github&#125;&#125;, &#123;&#123;leetcode&#125;&#125;
                   </span>
                 </div>
+              )}
 
-                {/* Progress bar */}
-                <div>
-                  <div className="flex items-center justify-between text-xs text-slate-600 mb-1.5">
-                    <span>Dispatch progress: 79 of 82 sent</span>
-                    <span className="font-semibold text-emerald-600">96.3% success</span>
-                  </div>
-                  <div className="w-full h-2 rounded-full bg-slate-200 overflow-hidden">
-                    <div className="h-full bg-brand-600 rounded-full w-[96%]" />
-                  </div>
+              {/* Header Fields */}
+              <div className="space-y-2.5 text-xs sm:text-sm border-b border-slate-100 pb-3.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Recipient:</span>
+                  {activeMode === 'composed' ? (
+                    <div className="flex items-center gap-2">
+                      <div className={`w-6 h-6 rounded-full bg-gradient-to-tr ${current.avatarBg} text-white font-bold text-[10px] flex items-center justify-center shadow-xs`}>
+                        {current.name.charAt(0)}
+                      </div>
+                      <span className="font-semibold text-slate-800">{current.name}</span>
+                      <span className="text-slate-400 font-mono text-xs">• {current.email}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1.5 font-mono text-xs text-brand-600 font-bold bg-brand-50 px-2 py-0.5 rounded-md">
+                      <span>&#123;&#123;email&#125;&#125;</span>
+                      <span className="text-slate-400 font-normal font-sans">• &#123;&#123;name&#125;&#125; at &#123;&#123;company&#125;&#125;</span>
+                    </div>
+                  )}
                 </div>
-
-                {/* Email preview snippet */}
-                <div className="p-3.5 bg-white rounded-lg border border-slate-200/80 text-xs text-slate-700 font-mono space-y-1.5">
-                  <div className="text-slate-500 font-sans text-[11px] pb-1 border-b border-slate-100 flex items-center justify-between">
-                    <span>Subject: <strong className="text-slate-800">Engineering Manager opportunities at TechCorp</strong></span>
-                    <span className="text-brand-600 font-mono">alex.morgan@techcorp.com</span>
-                  </div>
-                  <p className="font-sans text-xs text-slate-700 pt-1 leading-relaxed">
-                    Hello <span className="bg-brand-50 text-brand-700 px-1 py-0.5 rounded font-mono text-[11px]">Alex</span>,
-                    I noticed your work leading the platform engineering team at <span className="bg-brand-50 text-brand-700 px-1 py-0.5 rounded font-mono text-[11px]">TechCorp</span>. I wanted to reach out regarding high-impact senior engineering roles...
-                  </p>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Subject:</span>
+                  <span className="font-medium text-slate-800 font-mono text-xs sm:text-sm">
+                    {activeMode === 'composed' ? current.subject : 'Senior Full Stack Engineer opportunities at {{company}}'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-400">Attached:</span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-mono text-xs">
+                    <Paperclip className="w-3.5 h-3.5 text-brand-600" /> Resume_Alex_Morgan.pdf
+                  </span>
                 </div>
               </div>
 
-              {/* Side metrics panel */}
-              <div className="p-5 bg-white rounded-lg border border-slate-200/70 flex flex-col justify-between space-y-3">
-                <div className="space-y-3">
-                  <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Deliverability Metrics</span>
-                  
-                  <div className="p-3 bg-slate-50 rounded-lg">
-                    <span className="text-[11px] text-slate-500 block">Total Recruiter Contacts</span>
-                    <span className="text-xl font-bold text-slate-900">142</span>
-                  </div>
+              {/* Message Body with Dynamic Variables or Resolved Links */}
+              <div className="p-4 rounded-xl bg-slate-50/50 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans min-h-[140px] space-y-3">
+                {activeMode === 'composed' ? (
+                  <>
+                    <p>{current.opening}</p>
+                    
+                    <div className="p-3 rounded-lg bg-white border border-slate-200/80 space-y-1.5 text-xs">
+                      <p className="font-medium text-slate-600">You can inspect my code and problem-solving benchmarks below:</p>
+                      <div className="space-y-1 font-mono text-xs pl-1">
+                        <p className="flex items-center gap-1.5">
+                          <span className="text-slate-400 font-sans">• GitHub:</span>
+                          <span className="text-brand-600 font-medium underline">https://github.com/alexmorgan</span>
+                          <span className="text-[10px] text-emerald-600 font-sans font-bold bg-emerald-50 px-1 rounded">Auto-filled</span>
+                        </p>
+                        <p className="flex items-center gap-1.5">
+                          <span className="text-slate-400 font-sans">• LeetCode:</span>
+                          <span className="text-amber-600 font-medium underline">https://leetcode.com/u/alexmorgan</span>
+                          <span className="text-[10px] text-emerald-600 font-sans font-bold bg-emerald-50 px-1 rounded">Auto-filled</span>
+                        </p>
+                        <p className="flex items-center gap-1.5">
+                          <span className="text-slate-400 font-sans">• Portfolio:</span>
+                          <span className="text-coral-600 font-medium underline">https://alexmorgan.dev</span>
+                          <span className="text-[10px] text-emerald-600 font-sans font-bold bg-emerald-50 px-1 rounded">Auto-filled</span>
+                        </p>
+                      </div>
+                    </div>
 
-                  <div className="p-3 bg-emerald-50/60 rounded-lg">
-                    <span className="text-[11px] text-emerald-700 block">Delivered Successfully</span>
-                    <span className="text-xl font-bold text-emerald-700">128</span>
-                  </div>
+                    <p className="text-slate-600">My resume is attached directly. Would love 10 minutes to discuss open roles!</p>
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      Hi <span className="bg-brand-100/80 text-brand-800 font-mono px-1 rounded font-bold">&#123;&#123;name&#125;&#125;</span>, saw your recent update regarding <span className="bg-brand-100/80 text-brand-800 font-mono px-1 rounded font-bold">&#123;&#123;company&#125;&#125;</span>'s engineering infrastructure scaling. With 4+ years architecting high-throughput distributed systems, I would love to connect for high-impact roles.
+                    </p>
+                    
+                    <div className="p-3 rounded-lg bg-white border border-slate-200/80 space-y-1.5 text-xs">
+                      <p className="font-medium text-slate-600">You can inspect my code and problem-solving benchmarks below:</p>
+                      <div className="space-y-1 font-mono text-xs text-slate-700 pl-1">
+                        <p className="flex items-center gap-1.5">
+                          <span className="text-slate-400">• GitHub:</span>
+                          <span className="bg-brand-50 text-brand-700 px-1.5 py-0.5 rounded font-bold border border-brand-100">&#123;&#123;github&#125;&#125;</span>
+                        </p>
+                        <p className="flex items-center gap-1.5">
+                          <span className="text-slate-400">• LeetCode:</span>
+                          <span className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded font-bold border border-amber-100">&#123;&#123;leetcode&#125;&#125;</span>
+                        </p>
+                        <p className="flex items-center gap-1.5">
+                          <span className="text-slate-400">• Portfolio:</span>
+                          <span className="bg-coral-50 text-coral-700 px-1.5 py-0.5 rounded font-bold border border-coral-100">&#123;&#123;portfolio&#125;&#125;</span>
+                        </p>
+                      </div>
+                    </div>
 
-                  <div className="p-3 bg-brand-50/60 rounded-lg">
-                    <span className="text-[11px] text-brand-700 block">Google API Rate Limits</span>
-                    <span className="text-xs font-medium text-brand-800">Controlled (8s interval)</span>
+                    <p className="text-slate-600">My resume is attached directly. Would love 10 minutes to discuss open roles!</p>
+                  </>
+                )}
+              </div>
+
+              {/* Variable Highlight Banner */}
+              <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/60 flex items-start gap-2.5 text-xs text-amber-900">
+                <Sparkles className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <span>
+                  {activeMode === 'raw' ? (
+                    <>
+                      <strong>Template Creation Mode:</strong> Write your message once using dynamic variables. You never need to copy-paste URLs or look up recruiter details every time!
+                    </>
+                  ) : (
+                    <>
+                      <strong>Final Composed Email:</strong> CareerReach substitutes <code className="bg-white px-1.5 py-0.5 rounded text-brand-600 font-mono font-bold">&#123;&#123;github&#125;&#125;</code> and <code className="bg-white px-1.5 py-0.5 rounded text-amber-700 font-mono font-bold">&#123;&#123;leetcode&#125;&#125;</code> automatically before sending directly to the recruiter's primary inbox!
+                    </>
+                  )}
+                </span>
+              </div>
+
+              {/* Action Toolbar */}
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>Mode: <strong>{activeMode === 'raw' ? 'Raw Template' : 'Final Composed'}</strong></span>
+                </div>
+
+                <button
+                  onClick={handleSimulateSend}
+                  disabled={sendingState !== 'idle'}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+                    sendingState === 'sent'
+                      ? 'bg-emerald-500 text-white shadow-card'
+                      : sendingState === 'sending'
+                      ? 'bg-brand-600 text-white animate-pulse'
+                      : 'bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 text-white shadow-card hover:-translate-y-0.5'
+                  }`}
+                >
+                  {sendingState === 'sent' ? (
+                    <>
+                      <Check className="w-3.5 h-3.5" /> Delivered to Inbox!
+                    </>
+                  ) : sendingState === 'sending' ? (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Dispatching via Gmail...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" /> Simulate Real Send
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Right: Live Diagnostics Panel */}
+            <div className="space-y-4">
+              <div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-100/80 space-y-4">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">
+                  Delivery Safeguards
+                </span>
+
+                <div className="p-3.5 rounded-xl bg-amber-50/70 border border-amber-100 flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <Link2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-amber-900">Variable Link Injection</h5>
+                    <p className="text-[11px] text-amber-700">Auto-injects GitHub, LeetCode &amp; Portfolio without copying</p>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-slate-100 text-[11px] text-slate-400 flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  AES-256 token encryption at rest
+                <div className="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-100 flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-emerald-900">Primary Inbox Delivery</h5>
+                    <p className="text-[11px] text-emerald-700">Official Gmail OAuth avoids spam traps</p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-brand-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <Clock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-slate-800">Randomized Throttle</h5>
+                    <p className="text-[11px] text-slate-500">15s–45s gaps respect Google rate limits</p>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-indigo-50/70 border border-indigo-100 flex items-center gap-3.5">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <Zap className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h5 className="text-xs font-bold text-indigo-900">Duplicate Shield</h5>
+                    <p className="text-[11px] text-indigo-700">Skips previously contacted recruiters</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -203,266 +473,115 @@ export const LandingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section id="how-it-works" className="py-20 bg-slate-50/60 border-t border-slate-200/60 scroll-mt-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-2">
-              Workflow
-            </h2>
-            <p className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              From recruiter list to high-deliverability outreach in 4 steps
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Step 01 */}
-            <div className="p-6 rounded-xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div>
-                <span className="text-2xl font-extrabold text-brand-600/30 block mb-3 font-mono">
-                  01
-                </span>
-                <h3 className="text-base font-bold text-slate-900 mb-2">
-                  Import contacts
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Drop your Excel (<code className="text-brand-600">.xlsx</code>, <code className="text-brand-600">.xls</code>) or CSV spreadsheet. Map columns interactively with a 10-row data preview.
-                </p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-slate-100 text-[11px] font-medium text-slate-400">
-                Automatic duplicate &amp; syntax audit
-              </div>
-            </div>
-
-            {/* Step 02 */}
-            <div className="p-6 rounded-xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div>
-                <span className="text-2xl font-extrabold text-brand-600/30 block mb-3 font-mono">
-                  02
-                </span>
-                <h3 className="text-base font-bold text-slate-900 mb-2">
-                  Personalize your message
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Craft dynamic email templates with tags like <code className="text-brand-600">&#123;&#123;name&#125;&#125;</code> and <code className="text-brand-600">&#123;&#123;company&#125;&#125;</code>. Real-time linter warns of unknown tags.
-                </p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-slate-100 text-[11px] font-medium text-slate-400">
-                Live recipient preview mode
-              </div>
-            </div>
-
-            {/* Step 03 */}
-            <div className="p-6 rounded-xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div>
-                <span className="text-2xl font-extrabold text-brand-600/30 block mb-3 font-mono">
-                  03
-                </span>
-                <h3 className="text-base font-bold text-slate-900 mb-2">
-                  Connect Gmail
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Authorize through Google&apos;s official OAuth 2.0 flow. Passwords are never requested, stored, or visible to the application.
-                </p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-slate-100 text-[11px] font-medium text-slate-400">
-                Scoped strictly to email dispatch
-              </div>
-            </div>
-
-            {/* Step 04 */}
-            <div className="p-6 rounded-xl bg-white border border-slate-200/80 shadow-xs flex flex-col justify-between">
-              <div>
-                <span className="text-2xl font-extrabold text-brand-600/30 block mb-3 font-mono">
-                  04
-                </span>
-                <h3 className="text-base font-bold text-slate-900 mb-2">
-                  Launch your campaign
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Review pre-flight validation, safely skip past recipients, and dispatch with controlled rate throttling to ensure inbox delivery.
-                </p>
-              </div>
-              <div className="mt-4 pt-4 border-t border-slate-100 text-[11px] font-medium text-slate-400">
-                Pause, resume, or abort anytime
-              </div>
-            </div>
-          </div>
+      {/* Gateway Discovery Cards: Sub-pages */}
+      <section className="py-12 px-6 max-w-6xl mx-auto w-full z-10">
+        <div className="text-center max-w-2xl mx-auto mb-8">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Dive Deeper Into CareerReach
+          </h2>
+          <p className="text-sm text-slate-500 mt-2">
+            Explore our end-to-end workflow, full feature suite, and Google-certified security architecture.
+          </p>
         </div>
-      </section>
 
-      {/* Features Grid */}
-      <section id="features" className="py-20 bg-white border-t border-slate-100 scroll-mt-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold text-brand-600 uppercase tracking-wider mb-2">
-              Features
-            </h2>
-            <p className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Everything you need for serious recruitment outreach
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Feature 1 */}
-            <div className="p-6 rounded-xl border border-slate-200/80 bg-white shadow-xs">
-              <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
-                <FileSpreadsheet className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 mb-2">Excel &amp; CSV Contact Import</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Smart parser handles .xlsx and .csv files. Map varied columns (Full Name, Company, Title, Email) with a 10-row preview and dry-run validation.
-              </p>
-            </div>
-
-            {/* Feature 2 */}
-            <div className="p-6 rounded-xl border border-slate-200/80 bg-white shadow-xs">
-              <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card 1: How It Works Gateway */}
+          <div className="glass-card p-7 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-white to-coral-50/50 flex flex-col justify-between hover:shadow-card transition-all">
+            <div>
+              <div className="w-10 h-10 rounded-2xl bg-coral-500 text-white flex items-center justify-center mb-5 shadow-card">
                 <Sparkles className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 mb-2">Personalized Templates</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Compose custom outreach templates with dynamic placeholders. Built-in linter warns against misspelled tags before emails are queued.
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">
+                Outreach Workflow
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                Walk through the step-by-step recruiter outreach journey from raw CSV ingestion to personalized variables and response rate optimization.
               </p>
             </div>
-
-            {/* Feature 3 */}
-            <div className="p-6 rounded-xl border border-slate-200/80 bg-white shadow-xs">
-              <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
-                <Mail className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 mb-2">Gmail Integration</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Connect your personal Gmail or Google Workspace account via Google OAuth 2.0. Send messages authentically from your own inbox.
-              </p>
-            </div>
-
-            {/* Feature 4 */}
-            <div className="p-6 rounded-xl border border-slate-200/80 bg-white shadow-xs">
-              <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
-                <Layers className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 mb-2">Campaign Tracking</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Monitor every campaign in real time. Inspect recipient logs, delivery statuses, error codes, and live dispatch counters.
-              </p>
-            </div>
-
-            {/* Feature 5 */}
-            <div className="p-6 rounded-xl border border-slate-200/80 bg-white shadow-xs">
-              <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
-                <Sliders className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 mb-2">Sending Controls &amp; Safety</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Configure customizable dispatch intervals (2s–15s), pause/resume execution, avoid duplicate recipients, and respect opt-outs.
-              </p>
-            </div>
-
-            {/* Feature 6 */}
-            <div className="p-6 rounded-xl border border-slate-200/80 bg-white shadow-xs">
-              <div className="w-10 h-10 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center mb-4">
-                <BarChart3 className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 mb-2">Analytics &amp; Audit Trail</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Track global deliverability success rates, failed emails with error reasons, and a chronological workspace activity audit log.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Trust & Security Section */}
-      <section id="security" className="py-16 bg-slate-900 text-white scroll-mt-16">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-800 text-emerald-400 text-xs font-semibold mb-3 border border-slate-700">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Authentic Security Architecture</span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-              Your Google credentials stay in your hands.
-            </h2>
-            <p className="mt-3 text-sm text-slate-400 leading-relaxed">
-              We designed CareerReach so you never have to give us or anyone else your Gmail password.
-            </p>
+            <Link
+              to="/how-it-works"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-coral-600 hover:text-coral-700 transition-colors group"
+            >
+              <span>Explore 4-Step Workflow</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            <div className="p-5 rounded-lg bg-slate-800/80 border border-slate-700 text-left">
-              <div className="w-8 h-8 rounded-lg bg-slate-700 text-emerald-400 flex items-center justify-center mb-3">
-                <Lock className="w-4 h-4" />
+          {/* Card 2: Features Gateway */}
+          <div className="glass-card p-7 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-white to-brand-50/50 flex flex-col justify-between hover:shadow-card transition-all">
+            <div>
+              <div className="w-10 h-10 rounded-2xl bg-brand-500 text-white flex items-center justify-center mb-5 shadow-card">
+                <FileSpreadsheet className="w-5 h-5" />
               </div>
-              <h4 className="text-sm font-bold text-white mb-1.5">Official Google OAuth 2.0</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                You authorize directly on Google&apos;s login domain. Passwords are never requested or handled by CareerReach.
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">
+                Full Feature Suite
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                Inspect our Excel &amp; CSV contact parser, dynamic link variable injection, cloud resume storage, and live campaign queue controls.
               </p>
             </div>
-
-            <div className="p-5 rounded-lg bg-slate-800/80 border border-slate-700 text-left">
-              <div className="w-8 h-8 rounded-lg bg-slate-700 text-emerald-400 flex items-center justify-center mb-3">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-bold text-white mb-1.5">AES-256 Token Encryption</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                OAuth access tokens are encrypted at rest using industry-standard AES-256-GCM. Tokens are never exposed client-side.
-              </p>
-            </div>
-
-            <div className="p-5 rounded-lg bg-slate-800/80 border border-slate-700 text-left">
-              <div className="w-8 h-8 rounded-lg bg-slate-700 text-emerald-400 flex items-center justify-center mb-3">
-                <RefreshCw className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-bold text-white mb-1.5">One-Click Disconnect</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Disconnect your Gmail account at any time with a single click. All associated session tokens are immediately deleted.
-              </p>
-            </div>
+            <Link
+              to="/features"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors group"
+            >
+              <span>View All Capabilities</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </Link>
           </div>
-        </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-white border-t border-slate-100 text-center">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-            Ready to streamline your cold recruitment outreach?
-          </h2>
-          <p className="mt-3 text-base text-slate-600 max-w-xl mx-auto">
-            Get started today with CareerReach. Import contacts, craft personalized templates, and launch your first campaign.
-          </p>
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <Link to="/register">
-              <Button size="lg" variant="primary" icon={<ArrowRight className="w-4 h-4" />}>
-                Get Started Free
-              </Button>
+          {/* Card 3: Security Gateway */}
+          <div className="glass-card p-7 sm:p-8 rounded-3xl bg-gradient-to-br from-white via-white to-emerald-50/50 flex flex-col justify-between hover:shadow-card transition-all">
+            <div>
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-5 shadow-card">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">
+                Security &amp; Google Consent
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                Your Gmail password is never stored or seen. We use restricted Google OAuth 2.0 tokens, AES-256 encryption at rest, and 1-click token erasure.
+              </p>
+            </div>
+            <Link
+              to="/security"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-bold text-emerald-600 hover:text-emerald-700 transition-colors group"
+            >
+              <span>Inspect Security Architecture</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-10 bg-slate-50 border-t border-slate-200/80 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-brand-600 text-white flex items-center justify-center">
-              <Mail className="w-3.5 h-3.5" />
+      {/* High-Converting CTA Banner */}
+      <section className="py-10 sm:py-12 px-6 max-w-6xl mx-auto w-full z-10 text-center">
+        <div className="rounded-3xl p-10 sm:p-14 bg-gradient-to-r from-brand-600 via-indigo-600 to-coral-500 text-white shadow-xl relative overflow-hidden">
+          <div className="relative z-10 max-w-xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+              Ready to start hearing back from companies?
+            </h2>
+            <p className="mt-3 text-sm sm:text-base text-white/90 leading-relaxed">
+              Create your account in 30 seconds. No credit card required. Import your contacts and send your first batch today.
+            </p>
+            <div className="mt-7 flex items-center justify-center">
+              <Link to="/register">
+                <Button
+                  variant="white"
+                  size="lg"
+                  pill
+                  className="font-bold px-8 py-3.5 text-base text-slate-900 shadow-xl"
+                  icon={<ArrowRight className="w-4 h-4 text-brand-600" />}
+                >
+                  Create Free Workspace
+                </Button>
+              </Link>
             </div>
-            <span className="font-bold text-slate-800">CareerReach</span>
-            <span className="text-slate-400">&bull; Smarter outreach. Better opportunities.</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <Link to="/login" className="hover:text-slate-900 transition-colors">Sign In</Link>
-            <Link to="/register" className="hover:text-slate-900 transition-colors">Register</Link>
-            <a href="#how-it-works" className="hover:text-slate-900 transition-colors">How It Works</a>
-            <a href="#security" className="hover:text-slate-900 transition-colors">Security</a>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-6 mt-4 pt-4 border-t border-slate-200/50 text-center text-slate-400 text-[11px]">
-          © 2026 CareerReach. All rights reserved.
-        </div>
-      </footer>
+      </section>
+
+      {/* Shared Modern Footer */}
+      <MarketingFooter />
     </div>
   );
 };

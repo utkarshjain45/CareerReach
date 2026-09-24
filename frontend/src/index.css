@@ -11,13 +11,52 @@
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 font-sans min-h-screen selection:bg-brand-600 selection:text-white;
+    @apply bg-[#FBFBFA] text-slate-800 font-sans min-h-screen selection:bg-brand-500 selection:text-white antialiased;
   }
 
-  /* Consistent focus ring utilities */
+  /* Consistent modern focus ring */
   :focus-visible {
-    @apply outline-none ring-2 ring-brand-500/40 ring-offset-2 ring-offset-white;
+    @apply outline-none ring-2 ring-brand-500/40 ring-offset-2 ring-offset-[#FBFBFA];
   }
+}
+
+/* Modern soft aesthetic utilities */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 10px 30px -4px rgba(15, 23, 42, 0.04), 0 0 1px 1px rgba(0, 0, 0, 0.02);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.03);
+}
+
+.glass-card {
+  background: #ffffff;
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.03), 0 0 1px 1px rgba(0, 0, 0, 0.03);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px -6px rgba(15, 23, 42, 0.07), 0 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Ambient gradient mesh */
+.ambient-glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(90px);
+  pointer-events: none;
+  opacity: 0.65;
+  z-index: 0;
 }
 
 /* Subtle, modern scrollbars */
@@ -31,10 +70,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #e2e8f0;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #cbd5e1;
 }

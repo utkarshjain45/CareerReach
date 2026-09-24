@@ -129,8 +129,8 @@ export const GmailConnectPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Gmail Connection</h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Gmail Connection</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Connect your personal Gmail or Google Workspace account via OAuth 2.0 to dispatch recruitment outreach
           </p>
         </div>
@@ -138,16 +138,17 @@ export const GmailConnectPage: React.FC = () => {
         <Button
           variant="outline"
           size="sm"
+          pill
           onClick={fetchStatus}
           loading={loading}
-          icon={<RefreshCw className="w-3.5 h-3.5" />}
+          icon={<RefreshCw className="w-3.5 h-3.5 text-brand-600" />}
         >
           Refresh Status
         </Button>
       </div>
 
       {/* Main Connection Status Card */}
-      <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-xs">
+      <div className="glass-panel rounded-3xl p-8 shadow-card border border-white/80">
         {loading ? (
           <div className="py-12 flex flex-col items-center justify-center gap-3">
             <Loader2 className="w-8 h-8 animate-spin text-brand-600" />
@@ -158,16 +159,16 @@ export const GmailConnectPage: React.FC = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-100">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-xs shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-xs shrink-0">
                   <Mail className="w-8 h-8" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                       Connected
                     </span>
-                    <span className="text-xs text-slate-400">
+                    <span className="text-xs text-slate-400 font-medium">
                       via Google OAuth 2.0
                     </span>
                   </div>
@@ -186,6 +187,7 @@ export const GmailConnectPage: React.FC = () => {
               <Button
                 variant="danger"
                 size="md"
+                pill
                 onClick={() => setDisconnectDialogOpen(true)}
                 icon={<LogOut className="w-4 h-4" />}
               >
@@ -200,7 +202,7 @@ export const GmailConnectPage: React.FC = () => {
                   <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
                   <span>Your Gmail authorization token requires re-authorization.</span>
                 </div>
-                <Button variant="primary" size="sm" onClick={handleConnectGmail} loading={connecting}>
+                <Button variant="coral" size="sm" pill onClick={handleConnectGmail} loading={connecting}>
                   Reconnect Gmail
                 </Button>
               </div>
@@ -208,13 +210,13 @@ export const GmailConnectPage: React.FC = () => {
 
             {/* Account Capabilities */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold text-xs block mb-1">Sending Identity</span>
-                <span className="font-semibold text-slate-800 text-sm">{connection.googleAccountEmail}</span>
+              <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-100">
+                <span className="text-slate-400 font-bold text-xs uppercase tracking-wider block mb-1">Sending Identity</span>
+                <span className="font-bold text-slate-800 text-sm">{connection.googleAccountEmail}</span>
               </div>
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                <span className="text-slate-400 font-semibold text-xs block mb-1">Credential Security</span>
-                <span className="font-semibold text-emerald-700 text-sm flex items-center gap-1.5">
+              <div className="p-4 rounded-2xl bg-slate-50/80 border border-slate-100">
+                <span className="text-slate-400 font-bold text-xs uppercase tracking-wider block mb-1">Credential Security</span>
+                <span className="font-bold text-emerald-700 text-sm flex items-center gap-1.5">
                   <Lock className="w-4 h-4 text-emerald-600" /> AES-256 Encrypted at Rest
                 </span>
               </div>
@@ -225,12 +227,12 @@ export const GmailConnectPage: React.FC = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-100">
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 shadow-xs shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500 shadow-xs shrink-0">
                   <Mail className="w-8 h-8" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
                       <span className="w-2 h-2 rounded-full bg-slate-400" />
                       Not Connected
                     </span>
@@ -245,8 +247,9 @@ export const GmailConnectPage: React.FC = () => {
               </div>
 
               <Button
-                variant="primary"
+                variant="coral"
                 size="lg"
+                pill
                 onClick={handleConnectGmail}
                 loading={connecting}
                 icon={<ExternalLink className="w-4 h-4" />}
@@ -255,7 +258,7 @@ export const GmailConnectPage: React.FC = () => {
               </Button>
             </div>
 
-            <div className="p-4 bg-brand-50/70 border border-brand-100 rounded-2xl text-xs text-brand-900 leading-relaxed space-y-1">
+            <div className="p-4 bg-brand-50/80 border border-brand-100 rounded-2xl text-xs text-brand-900 leading-relaxed space-y-1">
               <p className="font-bold flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-brand-600" />
                 Zero Password Storage Guarantee
@@ -270,12 +273,12 @@ export const GmailConnectPage: React.FC = () => {
 
         {/* Security & Scopes Information */}
         <div className="mt-8 pt-6 border-t border-slate-100">
-          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider mb-4">
+          <h4 className="text-xs font-extrabold text-slate-700 uppercase tracking-wider mb-4">
             Security Architecture &amp; Scopes
           </h4>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+            <div className="p-4 rounded-2xl bg-white border border-slate-100 shadow-xs">
               <div className="flex items-center gap-2 font-mono text-xs font-bold text-slate-800 mb-1">
                 <Lock className="w-3.5 h-3.5 text-brand-600" />
                 <span>gmail.send</span>
@@ -285,7 +288,7 @@ export const GmailConnectPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+            <div className="p-4 rounded-2xl bg-white border border-slate-100 shadow-xs">
               <div className="flex items-center gap-2 font-mono text-xs font-bold text-slate-800 mb-1">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                 <span>userinfo.email</span>
@@ -295,7 +298,7 @@ export const GmailConnectPage: React.FC = () => {
               </p>
             </div>
 
-            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50/50">
+            <div className="p-4 rounded-2xl bg-white border border-slate-100 shadow-xs">
               <div className="flex items-center gap-2 font-mono text-xs font-bold text-slate-800 mb-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
                 <span>Multi-Tenant Vault</span>

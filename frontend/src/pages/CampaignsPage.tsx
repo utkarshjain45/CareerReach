@@ -142,8 +142,8 @@ export const CampaignsPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Outreach Campaigns</h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Outreach Campaigns</h2>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Create, queue, and dispatch personalized recruitment campaigns via Gmail
           </p>
         </div>
@@ -152,13 +152,16 @@ export const CampaignsPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
+            pill
             onClick={() => fetchCampaigns()}
-            icon={<RefreshCw className="w-3.5 h-3.5" />}
+            icon={<RefreshCw className="w-3.5 h-3.5 text-brand-600" />}
           >
             Refresh
           </Button>
           <Button
-            variant="primary"
+            variant="coral"
+            size="sm"
+            pill
             onClick={() => setCreateModalOpen(true)}
             icon={<Plus className="w-4 h-4" />}
           >
@@ -194,7 +197,7 @@ export const CampaignsPage: React.FC = () => {
               <div
                 key={camp.id}
                 onClick={() => openDetail(camp.id)}
-                className="bg-white rounded-2xl border border-slate-200/80 hover:border-brand-300 shadow-xs hover:shadow-md transition-all flex flex-col justify-between overflow-hidden cursor-pointer group"
+                className="glass-card flex flex-col justify-between overflow-hidden cursor-pointer group hover:-translate-y-1 transition-all duration-200"
               >
                 {/* Header info */}
                 <div className="p-6 pb-4">
@@ -215,7 +218,7 @@ export const CampaignsPage: React.FC = () => {
                       <span>Progress</span>
                       <span className="font-mono text-brand-600">{progressPercent}%</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${
                           camp.status === 'FAILED' || (camp.sentCount === 0 && camp.failedCount > 0)
@@ -224,7 +227,7 @@ export const CampaignsPage: React.FC = () => {
                             ? camp.failedCount > 0
                               ? 'bg-amber-500'
                               : 'bg-emerald-500'
-                            : 'bg-brand-600'
+                            : 'bg-gradient-to-r from-brand-600 to-indigo-500'
                         }`}
                         style={{ width: `${progressPercent}%` }}
                       />
@@ -232,36 +235,36 @@ export const CampaignsPage: React.FC = () => {
                   </div>
 
                   {/* Counters */}
-                  <div className="grid grid-cols-4 gap-1.5 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-center text-xs">
+                  <div className="grid grid-cols-4 gap-1.5 p-3 rounded-2xl bg-slate-50/80 border border-slate-100/80 text-center text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-slate-400 block">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">
                         Total
                       </span>
-                      <span className="font-bold text-slate-800">{camp.totalRecipients}</span>
+                      <span className="font-black text-slate-800">{camp.totalRecipients}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-emerald-600 block">
+                      <span className="text-[10px] uppercase font-bold text-emerald-600 block">
                         Sent
                       </span>
-                      <span className="font-bold text-emerald-700">{camp.sentCount}</span>
+                      <span className="font-black text-emerald-600">{camp.sentCount}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-rose-600 block">
+                      <span className="text-[10px] uppercase font-bold text-rose-500 block">
                         Failed
                       </span>
-                      <span className="font-bold text-rose-700">{camp.failedCount}</span>
+                      <span className="font-black text-rose-600">{camp.failedCount}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-slate-500 block">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">
                         Pending
                       </span>
-                      <span className="font-bold text-slate-700">{camp.pendingCount}</span>
+                      <span className="font-black text-slate-700">{camp.pendingCount}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Footer Controls */}
-                <div className="px-6 py-3.5 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-xs">
+                <div className="px-6 py-3.5 border-t border-slate-100/80 bg-slate-50/40 flex items-center justify-between text-xs">
                   <span className="text-[11px] text-slate-400">
                     {new Date(camp.createdAt).toLocaleDateString()}
                   </span>

@@ -220,19 +220,21 @@ export const AttachmentsPage: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
-            <span>My Attachments</span>
-            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
+            <span>Resume &amp; Attachments</span>
+            <span className="text-xs font-bold px-3 py-1 rounded-full bg-brand-50 text-brand-700">
               {attachments.length} {attachments.length === 1 ? 'file' : 'files'}
             </span>
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Securely store your resume and other supported PDF documents for use in outreach campaigns.
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Securely store your resume and verified documents for one-click attachment to outreach emails.
           </p>
         </div>
 
         <Button
-          variant="primary"
+          variant="coral"
+          size="sm"
+          pill
           onClick={() => {
             resetUploadState();
             setUploadModalOpen(true);
@@ -244,22 +246,22 @@ export const AttachmentsPage: React.FC = () => {
       </div>
 
       {/* Security Banner */}
-      <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs text-slate-600">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200">
-            <ShieldCheck className="w-4 h-4" />
+      <div className="glass-panel p-4 rounded-2xl shadow-card flex items-center justify-between text-xs text-slate-600">
+        <div className="flex items-center gap-3.5">
+          <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 shadow-xs">
+            <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <span className="font-bold text-slate-800 block">Private & Encrypted Object Storage</span>
-            <span>Your PDFs are securely stored in private cloud storage and only attached to emails you explicitly send.</span>
+            <span className="font-bold text-slate-900 block text-xs">Private Cloud Storage</span>
+            <span className="text-[11px] text-slate-500">Your PDFs are stored safely in cloud storage and attached as encoded base64 MIME on dispatch.</span>
           </div>
         </div>
-        <span className="hidden md:inline-block text-[11px] text-slate-400 font-medium">Max 5 MB • PDF only</span>
+        <span className="hidden md:inline-block text-[11px] text-slate-400 font-semibold px-2.5 py-1 bg-white rounded-full border border-slate-100">Max 5 MB • PDF only</span>
       </div>
 
       {/* Content Area */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <CardSkeleton />
           <CardSkeleton />
           <CardSkeleton />
@@ -277,11 +279,11 @@ export const AttachmentsPage: React.FC = () => {
           actionIcon={<Plus className="w-4 h-4" />}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {attachments.map((att) => (
             <div
               key={att.id}
-              className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between group"
+              className="glass-card p-6 flex flex-col justify-between group"
             >
               <div>
                 <div className="flex items-start justify-between gap-3">

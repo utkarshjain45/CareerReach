@@ -298,35 +298,38 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-semibold">
+      <div className="flex items-center gap-1.5 p-1.5 bg-slate-100/80 rounded-2xl w-fit text-xs font-semibold">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${activeTab === 'profile'
-              ? 'bg-brand-600 text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
+          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${
+            activeTab === 'profile'
+              ? 'bg-white text-slate-900 shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
         >
-          <UserIcon className="w-4 h-4" /> Profile &amp; Security
+          <UserIcon className="w-4 h-4 text-brand-600" /> Profile &amp; Security
         </button>
 
         <button
           onClick={() => setActiveTab('gmail')}
-          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${activeTab === 'gmail'
-              ? 'bg-brand-600 text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
+          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${
+            activeTab === 'gmail'
+              ? 'bg-white text-slate-900 shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
         >
-          <Mail className="w-4 h-4" /> Gmail Integration
+          <Mail className="w-4 h-4 text-coral-500" /> Gmail Integration
         </button>
 
         <button
           onClick={() => setActiveTab('preferences')}
-          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${activeTab === 'preferences'
-              ? 'bg-brand-600 text-white shadow-xs'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-            }`}
+          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${
+            activeTab === 'preferences'
+              ? 'bg-white text-slate-900 shadow-xs font-bold'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
         >
-          <Sliders className="w-4 h-4" /> Sending Preferences
+          <Sliders className="w-4 h-4 text-emerald-600" /> Sending Preferences
         </button>
       </div>
 
@@ -334,14 +337,14 @@ export const SettingsPage: React.FC = () => {
       {activeTab === 'profile' && (
         <div className="space-y-6">
           {/* User Profile Card */}
-          <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-xs space-y-6">
+          <div className="glass-panel rounded-3xl p-8 shadow-card border border-white/80 space-y-6">
             <div className="flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center shadow-md shadow-brand-500/20">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white font-extrabold text-2xl flex items-center justify-center shadow-card">
                 {user?.name?.charAt(0).toUpperCase() || 'U'}
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-900">{user?.name}</h3>
-                <p className="text-xs text-slate-500">{user?.email}</p>
+                <h3 className="text-xl font-extrabold text-slate-900">{user?.name}</h3>
+                <p className="text-xs text-slate-400 font-medium">{user?.email}</p>
               </div>
             </div>
 

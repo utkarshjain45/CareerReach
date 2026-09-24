@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, ArrowRight, AlertCircle, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, ArrowRight, AlertCircle, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { Input } from '../components/common/Input';
 import { Button } from '../components/common/Button';
 import { AuthHeader } from '../components/layout/AuthHeader';
@@ -45,36 +45,40 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
+    <div className="min-h-screen bg-[#FBFBFA] flex flex-col justify-between relative overflow-hidden">
+      {/* Soft ambient background glows */}
+      <div className="ambient-glow w-[450px] h-[450px] bg-brand-200/50 -top-20 -left-20" />
+      <div className="ambient-glow w-[400px] h-[400px] bg-coral-200/40 -bottom-20 -right-20" />
+
       <AuthHeader current="login" />
 
-      <div className="flex-1 flex flex-col justify-center py-10 px-4 sm:px-6 lg:px-8">
+      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 z-10">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
           {/* Header text */}
           <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
-              Sign in to CareerReach
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+              Welcome Back
             </h1>
-            <p className="mt-2 text-sm text-slate-500">
-              Access your recruiter contacts, templates, and cold outreach campaigns
+            <p className="mt-1 text-xs sm:text-sm text-slate-500">
+              Sign in to manage your contacts, templates, and Gmail outreach campaigns
             </p>
           </div>
 
           {/* Form Card */}
-          <div className="bg-white py-8 px-6 sm:px-8 rounded-xl border border-slate-200/80 shadow-xs">
+          <div className="glass-panel py-8 px-6 sm:px-8 rounded-3xl shadow-card">
             <form onSubmit={handleSubmit} className="space-y-4">
               {errorMsg && (
-                <div className="p-3 rounded-lg bg-rose-50 border border-rose-200 flex items-center gap-2.5 text-rose-800 text-xs font-medium">
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 flex items-center gap-2.5 text-rose-800 text-xs font-medium">
                   <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               <Input
-                label="Work Email"
+                label="Work / Personal Email"
                 type="email"
                 autoComplete="email"
-                placeholder="you@company.com"
+                placeholder="you@example.com"
                 icon={<Mail className="w-4 h-4" />}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -105,10 +109,11 @@ export const LoginPage: React.FC = () => {
               <div className="pt-2">
                 <Button
                   type="submit"
-                  variant="primary"
+                  variant="coral"
                   size="md"
+                  pill
                   loading={loading}
-                  className="w-full"
+                  className="w-full text-sm font-bold"
                   icon={<ArrowRight className="w-4 h-4" />}
                 >
                   Sign In
@@ -118,16 +123,16 @@ export const LoginPage: React.FC = () => {
 
             <div className="mt-6 text-center text-xs text-slate-500 border-t border-slate-100 pt-5">
               Don&apos;t have an account yet?{' '}
-              <Link to="/register" className="font-semibold text-brand-600 hover:text-brand-700 underline">
-                Create an account
+              <Link to="/register" className="font-bold text-brand-600 hover:text-brand-700 underline">
+                Create free account
               </Link>
             </div>
           </div>
         </div>
       </div>
 
-      <footer className="py-6 text-center text-xs text-slate-400 border-t border-slate-100 bg-white">
-        © 2026 CareerReach. Smarter outreach. Better opportunities.
+      <footer className="py-6 text-center text-xs text-slate-400 border-t border-slate-100 z-10">
+        © {new Date().getFullYear()} CareerReach. Smarter outreach. Better opportunities.
       </footer>
     </div>
   );

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Plus,
   FileText,
@@ -7,6 +8,7 @@ import {
   Copy,
   Trash2,
   Search,
+  Link2,
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
@@ -106,24 +108,44 @@ export const TemplatesPage: React.FC = () => {
 
   return (
     <div className="space-y-5 max-w-6xl">
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200/80">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Email Templates</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Email Templates</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Compose and manage personalized outreach messages with variable tags.
           </p>
         </div>
 
-        <Button variant="primary" size="sm" onClick={handleCreate} icon={<Plus className="w-3.5 h-3.5" />}>
+        <Button variant="coral" size="sm" pill onClick={handleCreate} icon={<Plus className="w-3.5 h-3.5" />}>
           New Template
         </Button>
       </div>
 
+      {/* Platform Links Variable Tip Banner */}
+      <div className="glass-panel p-4 rounded-2xl shadow-xs border border-amber-200/60 bg-gradient-to-r from-amber-50/60 via-white to-brand-50/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start sm:items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-xs">
+            <Link2 className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="font-bold text-slate-800 block">
+              Auto-Attach GitHub, LeetCode &amp; Portfolio Links via Variables
+            </span>
+            <span className="text-slate-500">
+              Save your links once in <Link to="/settings" className="text-brand-600 font-semibold underline">Settings</Link>. Use <code className="bg-amber-100 text-amber-900 px-1 py-0.5 rounded font-mono text-[11px] font-bold">&#123;&#123;github&#125;&#125;</code>, <code className="bg-amber-100 text-amber-900 px-1 py-0.5 rounded font-mono text-[11px] font-bold">&#123;&#123;leetcode&#125;&#125;</code>, and <code className="bg-amber-100 text-amber-900 px-1 py-0.5 rounded font-mono text-[11px] font-bold">&#123;&#123;portfolio&#125;&#125;</code> so you never have to copy-paste URLs every time.
+            </span>
+          </div>
+        </div>
+        <Link to="/settings" className="shrink-0 text-xs font-bold text-amber-800 bg-amber-100/80 hover:bg-amber-200/80 px-3 py-1.5 rounded-xl transition-colors">
+          Manage Links
+        </Link>
+      </div>
+
       {/* Search Bar */}
-      <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-between gap-3">
+      <div className="glass-panel p-3.5 rounded-2xl shadow-card flex items-center justify-between gap-3">
         <div className="relative w-full sm:w-80">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
             <Search className="w-3.5 h-3.5" />
           </div>
           <input
@@ -131,18 +153,18 @@ export const TemplatesPage: React.FC = () => {
             placeholder="Search templates by name, subject, or body..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:border-brand-500 focus:ring-brand-100 transition-colors"
+            className="w-full rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white pl-10 pr-3 py-2 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-brand-500/15 transition-all"
           />
         </div>
 
-        <span className="text-xs text-slate-400 hidden sm:inline">
-          {templates.length} template{templates.length === 1 ? '' : 's'} found
+        <span className="text-xs font-semibold text-slate-400 hidden sm:inline">
+          {templates.length} template{templates.length === 1 ? '' : 's'} available
         </span>
       </div>
 
       {/* Templates Grid / List */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <CardSkeleton />
           <CardSkeleton />
         </div>
@@ -160,11 +182,11 @@ export const TemplatesPage: React.FC = () => {
           actionIcon={<Plus className="w-3.5 h-3.5" />}
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {templates.map((tpl) => (
             <div
               key={tpl.id}
-              className="bg-white p-5 rounded-xl border border-slate-200/80 shadow-xs hover:border-slate-300 transition-all flex flex-col justify-between"
+              className="glass-card p-6 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-start justify-between gap-3 mb-2">
