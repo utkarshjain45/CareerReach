@@ -35,23 +35,35 @@ export const CampaignsPage: React.FC = () => {
 
   const toast = useToast();
 
-  const fetchCampaigns = async () => {
-    setLoading(true);
+  const fetchCampaigns = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const res = await campaignApi.getCampaigns();
       if (res.data) {
         setCampaigns(res.data);
       }
     } catch {
-      toast.error('Failed to load campaigns');
+      if (!silent) toast.error('Failed to load campaigns');
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchCampaigns();
   }, []);
+
+  // Auto-refresh running campaigns every 3 seconds so progress updates live
+  useEffect(() => {
+    const hasRunning = campaigns.some((c) => c.status === 'RUNNING');
+    if (!hasRunning) return;
+
+    const interval = setInterval(() => {
+      fetchCampaigns(true);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [campaigns]);
 
   const openDetail = (id: string) => {
     setSelectedCampaignId(id);
@@ -128,7 +140,7 @@ export const CampaignsPage: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchCampaigns}
+            onClick={() => fetchCampaigns()}
             icon={<RefreshCw className="w-3.5 h-3.5" />}
           >
             Refresh

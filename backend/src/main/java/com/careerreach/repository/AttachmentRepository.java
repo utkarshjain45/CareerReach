@@ -21,6 +21,12 @@ public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
     @Query("SELECT a FROM Attachment a WHERE a.id IN :ids AND a.user.id = :userId")
     List<Attachment> findAllByIdInAndUserId(@Param("ids") Collection<UUID> ids, @Param("userId") UUID userId);
 
+    @Query("SELECT a FROM Campaign c JOIN c.attachments a WHERE c.id = :campaignId")
+    List<Attachment> findByCampaignId(@Param("campaignId") UUID campaignId);
+
+    @Query("SELECT a FROM EmailTemplate t JOIN t.attachments a WHERE t.id = :templateId")
+    List<Attachment> findByTemplateId(@Param("templateId") UUID templateId);
+
     boolean existsByIdAndUserId(UUID id, UUID userId);
 
     long countByUserId(UUID userId);

@@ -253,7 +253,13 @@ public class CampaignService {
         }
 
         if (campaign.getStatus() == CampaignStatus.RUNNING) {
-            throw new BadRequestException("Campaign is already running.");
+            if (campaignDispatcher.isActivelyDispatching(campaignId)) {
+                throw new BadRequestException("Campaign is already actively running.");
+            } else {
+                log.info("Campaign {} is RUNNING but has no active dispatcher thread. Re-triggering dispatcher.", campaignId);
+                triggerAsyncDispatch(campaign.getId());
+                return CampaignResponse.fromEntity(campaign);
+            }
         }
 
         if (campaign.getStatus() == CampaignStatus.COMPLETED) {
@@ -293,8 +299,8 @@ public class CampaignService {
         Campaign campaign = campaignRepository.findByIdAndUserId(campaignId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
 
-        if (campaign.getStatus() != CampaignStatus.PAUSED) {
-            throw new BadRequestException("Only paused campaigns can be resumed.");
+        if (campaign.getStatus() != CampaignStatus.PAUSED && campaign.getStatus() != CampaignStatus.RUNNING) {
+            throw new BadRequestException("Only paused or stalled campaigns can be resumed.");
         }
 
         campaign.setStatus(CampaignStatus.RUNNING);

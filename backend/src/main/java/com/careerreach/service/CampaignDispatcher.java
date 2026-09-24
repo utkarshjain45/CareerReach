@@ -29,6 +29,13 @@ public class CampaignDispatcher {
     private final GmailSenderService gmailSenderService;
     private final StorageService storageService;
     private final UserSettingsService userSettingsService;
+    private final com.careerreach.repository.AttachmentRepository attachmentRepository;
+
+    private final Set<UUID> activeCampaignIds = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    public boolean isActivelyDispatching(UUID campaignId) {
+        return activeCampaignIds.contains(campaignId);
+    }
 
     @Value("${app.campaign.delay-ms:2000}")
     private long baseDelayMs;
@@ -37,128 +44,161 @@ public class CampaignDispatcher {
 
     @Async("campaignTaskExecutor")
     public void dispatch(UUID campaignId) {
-        log.info("Starting background dispatching for campaign: {}", campaignId);
-
-        // Ensure database write has committed and is visible across thread connections
-        Campaign campaign = null;
-        for (int i = 0; i < 5; i++) {
-            campaign = campaignRepository.findByIdWithDetails(campaignId).orElse(null);
-            if (campaign != null && campaign.getStatus() == CampaignStatus.RUNNING) {
-                break;
-            }
-            try {
-                Thread.sleep(150);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
-            }
-        }
-
-        if (campaign == null) {
-            log.warn("Campaign {} not found after retries, terminating dispatcher", campaignId);
+        if (!activeCampaignIds.add(campaignId)) {
+            log.info("Campaign {} is already being dispatched by another thread, skipping", campaignId);
             return;
-        }
-
-        if (campaign.getStatus() != CampaignStatus.RUNNING) {
-            log.info("Campaign {} is not in RUNNING state (status={}), terminating dispatch loop",
-                    campaignId, campaign.getStatus());
-            return;
-        }
-
-
-        // Resolve all distinct attachments across template and campaign levels
-        List<EmailAttachmentPayload> attachmentPayloads = new ArrayList<>();
-        String attachmentRetrievalError = null;
-        Map<String, String> socialLinks = userSettingsService.getSocialLinksMap(campaign.getUser().getId());
-
-        Map<UUID, Attachment> distinctAttachments = new LinkedHashMap<>();
-        if (campaign.getTemplate() != null && campaign.getTemplate().getAttachments() != null) {
-            for (Attachment att : campaign.getTemplate().getAttachments()) {
-                if (att.getUser().getId().equals(campaign.getUser().getId())) {
-                    distinctAttachments.put(att.getId(), att);
-                }
-            }
-        }
-        if (campaign.getAttachments() != null) {
-            for (Attachment att : campaign.getAttachments()) {
-                if (att.getUser().getId().equals(campaign.getUser().getId())) {
-                    distinctAttachments.put(att.getId(), att);
-                }
-            }
-        }
-
-        if (!distinctAttachments.isEmpty()) {
-            log.info("Campaign {} has {} distinct attachments. Pre-fetching from storage...",
-                    campaignId, distinctAttachments.size());
-            for (Attachment att : distinctAttachments.values()) {
-                try {
-                    byte[] data = storageService.download(att.getStoragePath());
-                    attachmentPayloads.add(EmailAttachmentPayload.builder()
-                            .fileName(att.getOriginalFileName())
-                            .contentType(att.getContentType())
-                            .data(data)
-                            .build());
-                } catch (Exception e) {
-                    log.error("Failed to download attachment '{}' from storage for campaign {}: {}",
-                            att.getOriginalFileName(), campaignId, e.getMessage());
-                    attachmentRetrievalError = "Attachment '" + att.getOriginalFileName() +
-                            "' could not be retrieved from storage. Email was not sent.";
-                    break;
-                }
-            }
         }
 
         try {
-            while (true) {
+            log.info("Starting background dispatching for campaign: {}", campaignId);
+
+            // Ensure database write has committed and is visible across thread connections
+            Campaign campaign = null;
+            for (int i = 0; i < 5; i++) {
                 campaign = campaignRepository.findByIdWithDetails(campaignId).orElse(null);
-                if (campaign == null) {
-                    log.warn("Campaign {} not found, terminating dispatcher", campaignId);
+                if (campaign != null && campaign.getStatus() == CampaignStatus.RUNNING) {
                     break;
                 }
-
-                // Check if campaign was paused or cancelled mid-execution
-                if (campaign.getStatus() != CampaignStatus.RUNNING) {
-                    log.info("Campaign {} is no longer in RUNNING state (status={}), terminating dispatch loop",
-                            campaignId, campaign.getStatus());
-                    break;
-                }
-
-                List<CampaignRecipient> pendingList = recipientRepository.findByCampaignIdAndStatusWithDetails(
-                        campaignId, CampaignRecipientStatus.PENDING);
-
-                if (pendingList.isEmpty()) {
-                    log.info("Campaign {} has no more pending recipients, marking COMPLETED", campaignId);
-                    campaign.setStatus(CampaignStatus.COMPLETED);
-                    campaign.setCompletedAt(LocalDateTime.now());
-                    campaignRepository.save(campaign);
-
-                    break;
-                }
-
-                CampaignRecipient recipient = pendingList.get(0);
-                processRecipient(campaign, recipient, attachmentPayloads, attachmentRetrievalError, socialLinks);
-
-                // Determine rate-limit delay (respecting user preference if configured)
-                long delay = baseDelayMs;
                 try {
-                    var settings = userSettingsRepository.findByUserId(campaign.getUser().getId());
-                    if (settings.isPresent() && settings.get().getSendingDelayMs() >= 1000) {
-                        delay = settings.get().getSendingDelayMs();
-                    }
-                } catch (Exception ignored) {}
-
-                try {
-                    long jitter = random.nextInt(600);
-                    Thread.sleep(delay + jitter);
+                    Thread.sleep(150);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                    log.warn("Campaign dispatcher interrupted for campaign {}", campaignId, e);
-                    break;
+                    return;
                 }
             }
+
+            if (campaign == null) {
+                log.warn("Campaign {} not found after retries, terminating dispatcher", campaignId);
+                return;
+            }
+
+            if (campaign.getStatus() != CampaignStatus.RUNNING) {
+                log.info("Campaign {} is not in RUNNING state (status={}), terminating dispatch loop",
+                        campaignId, campaign.getStatus());
+                return;
+            }
+
+            // Resolve all distinct attachments across template and campaign levels safely without lazy proxy access
+            List<EmailAttachmentPayload> attachmentPayloads = new ArrayList<>();
+            String attachmentRetrievalError = null;
+            Map<String, String> socialLinks = userSettingsService.getSocialLinksMap(campaign.getUser().getId());
+
+            Map<UUID, Attachment> distinctAttachments = new LinkedHashMap<>();
+            try {
+                if (campaign.getTemplate() != null) {
+                    List<Attachment> templateAtts = attachmentRepository.findByTemplateId(campaign.getTemplate().getId());
+                    for (Attachment att : templateAtts) {
+                        distinctAttachments.put(att.getId(), att);
+                    }
+                }
+                List<Attachment> campaignAtts = attachmentRepository.findByCampaignId(campaignId);
+                for (Attachment att : campaignAtts) {
+                    distinctAttachments.put(att.getId(), att);
+                }
+            } catch (Exception e) {
+                log.error("Failed to query attachments for campaign {}: {}", campaignId, e.getMessage(), e);
+            }
+
+            if (!distinctAttachments.isEmpty()) {
+                log.info("Campaign {} has {} distinct attachments. Pre-fetching from storage...",
+                        campaignId, distinctAttachments.size());
+                for (Attachment att : distinctAttachments.values()) {
+                    try {
+                        byte[] data = storageService.download(att.getStoragePath());
+                        attachmentPayloads.add(EmailAttachmentPayload.builder()
+                                .fileName(att.getOriginalFileName())
+                                .contentType(att.getContentType())
+                                .data(data)
+                                .build());
+                    } catch (Exception e) {
+                        log.error("Failed to download attachment '{}' from storage for campaign {}: {}",
+                                att.getOriginalFileName(), campaignId, e.getMessage());
+                        attachmentRetrievalError = "Attachment '" + att.getOriginalFileName() +
+                                "' could not be retrieved from storage. Email was not sent.";
+                        break;
+                    }
+                }
+            }
+
+            try {
+                while (true) {
+                    campaign = campaignRepository.findByIdWithDetails(campaignId).orElse(null);
+                    if (campaign == null) {
+                        log.warn("Campaign {} not found, terminating dispatcher", campaignId);
+                        break;
+                    }
+
+                    // Check if campaign was paused or cancelled mid-execution
+                    if (campaign.getStatus() != CampaignStatus.RUNNING) {
+                        log.info("Campaign {} is no longer in RUNNING state (status={}), terminating dispatch loop",
+                                campaignId, campaign.getStatus());
+                        break;
+                    }
+
+                    List<CampaignRecipient> pendingList = recipientRepository.findByCampaignIdAndStatusWithDetails(
+                            campaignId, CampaignRecipientStatus.PENDING);
+
+                    if (pendingList.isEmpty()) {
+                        log.info("Campaign {} has no more pending recipients, marking COMPLETED", campaignId);
+                        campaign.setStatus(CampaignStatus.COMPLETED);
+                        campaign.setCompletedAt(LocalDateTime.now());
+                        campaignRepository.save(campaign);
+                        break;
+                    }
+
+                    CampaignRecipient recipient = pendingList.get(0);
+                    try {
+                        processRecipient(campaign, recipient, attachmentPayloads, attachmentRetrievalError, socialLinks);
+                    } catch (Exception e) {
+                        log.error("Unexpected error processing recipient {} for campaign {}: {}",
+                                recipient.getId(), campaignId, e.getMessage(), e);
+                        try {
+                            recipient.setStatus(CampaignRecipientStatus.FAILED);
+                            recipient.setErrorMessage("Dispatch error: " + (e.getMessage() != null ? e.getMessage() : "Unknown error"));
+                            recipientRepository.save(recipient);
+                            campaign.setFailedCount(campaign.getFailedCount() + 1);
+                            campaignRepository.save(campaign);
+                        } catch (Exception ex) {
+                            log.error("Failed to update status for recipient {}", recipient.getId(), ex);
+                        }
+                    }
+
+                    // Determine rate-limit delay (respecting user preference if configured)
+                    long delay = baseDelayMs;
+                    try {
+                        var settings = userSettingsRepository.findByUserId(campaign.getUser().getId());
+                        if (settings.isPresent() && settings.get().getSendingDelayMs() >= 1000) {
+                            delay = settings.get().getSendingDelayMs();
+                        }
+                    } catch (Exception ignored) {}
+
+                    try {
+                        long jitter = random.nextInt(600);
+                        Thread.sleep(delay + jitter);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        log.warn("Campaign dispatcher interrupted for campaign {}", campaignId, e);
+                        break;
+                    }
+                }
+            } finally {
+                // Clean up pre-fetched memory resources
+                attachmentPayloads.clear();
+            }
+
+        } catch (Throwable t) {
+            log.error("Fatal error during dispatch execution for campaign {}: {}", campaignId, t.getMessage(), t);
+            try {
+                campaignRepository.findById(campaignId).ifPresent(c -> {
+                    if (c.getStatus() == CampaignStatus.RUNNING) {
+                        c.setStatus(CampaignStatus.FAILED);
+                        c.setCompletedAt(LocalDateTime.now());
+                        campaignRepository.save(c);
+                    }
+                });
+            } catch (Exception ignored) {}
         } finally {
-            // Clean up pre-fetched memory resources
-            attachmentPayloads.clear();
+            activeCampaignIds.remove(campaignId);
         }
     }
 
