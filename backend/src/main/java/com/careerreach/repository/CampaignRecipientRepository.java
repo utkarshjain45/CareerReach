@@ -57,4 +57,8 @@ public interface CampaignRecipientRepository extends JpaRepository<CampaignRecip
         "WHERE cr.status = com.careerreach.entity.CampaignRecipientStatus.SENDING"
     )
     int resetOrphanedSendingRecipients();
+
+    @org.springframework.data.jpa.repository.Modifying
+    @org.springframework.data.jpa.repository.Query("DELETE FROM CampaignRecipient cr WHERE cr.campaign.id = :campaignId")
+    void deleteByCampaignId(@org.springframework.data.repository.query.Param("campaignId") UUID campaignId);
 }

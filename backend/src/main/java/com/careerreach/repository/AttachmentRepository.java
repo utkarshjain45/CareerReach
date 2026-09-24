@@ -27,6 +27,14 @@ public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
     @Query("SELECT a FROM EmailTemplate t JOIN t.attachments a WHERE t.id = :templateId")
     List<Attachment> findByTemplateId(@Param("templateId") UUID templateId);
 
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "DELETE FROM campaign_attachments WHERE attachment_id = :attachmentId", nativeQuery = true)
+    void deleteFromCampaignAttachments(@Param("attachmentId") UUID attachmentId);
+
+    @org.springframework.data.jpa.repository.Modifying
+    @Query(value = "DELETE FROM template_attachments WHERE attachment_id = :attachmentId", nativeQuery = true)
+    void deleteFromTemplateAttachments(@Param("attachmentId") UUID attachmentId);
+
     boolean existsByIdAndUserId(UUID id, UUID userId);
 
     long countByUserId(UUID userId);

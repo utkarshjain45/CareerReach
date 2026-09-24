@@ -47,6 +47,10 @@ public interface CampaignRepository extends JpaRepository<Campaign, UUID> {
     boolean existsByTemplateAttachmentIdAndStatus(@Param("attachmentId") UUID attachmentId, @Param("status") com.careerreach.entity.CampaignStatus status);
 
     @Modifying
+    @Query(value = "DELETE FROM campaign_attachments WHERE campaign_id = :campaignId", nativeQuery = true)
+    void deleteCampaignAttachments(@Param("campaignId") UUID campaignId);
+
+    @Modifying
     @Query("DELETE FROM Campaign c WHERE c.user.id = :userId AND c.id = :id")
     int deleteByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
 }

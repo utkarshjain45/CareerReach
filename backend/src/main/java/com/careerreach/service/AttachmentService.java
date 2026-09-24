@@ -2,6 +2,7 @@ package com.careerreach.service;
 
 import com.careerreach.dto.AttachmentDto;
 import com.careerreach.entity.Attachment;
+import com.careerreach.entity.Campaign;
 import com.careerreach.entity.CampaignStatus;
 import com.careerreach.entity.User;
 import com.careerreach.exception.BadRequestException;
@@ -29,6 +30,7 @@ public class AttachmentService {
     private final UserRepository userRepository;
     private final CampaignRepository campaignRepository;
     private final StorageService storageService;
+    private final CampaignDispatcher campaignDispatcher;
     private final long maxFileSize;
 
     public AttachmentService(
@@ -36,12 +38,14 @@ public class AttachmentService {
             UserRepository userRepository,
             CampaignRepository campaignRepository,
             StorageService storageService,
+            CampaignDispatcher campaignDispatcher,
             @Value("${supabase.max-file-size:5242880}") long maxFileSize
     ) {
         this.attachmentRepository = attachmentRepository;
         this.userRepository = userRepository;
         this.campaignRepository = campaignRepository;
         this.storageService = storageService;
+        this.campaignDispatcher = campaignDispatcher;
         this.maxFileSize = maxFileSize;
     }
 
@@ -131,16 +135,29 @@ public class AttachmentService {
         boolean inRunningTemplate = campaignRepository.existsByTemplateAttachmentIdAndStatus(attachmentId, CampaignStatus.RUNNING);
 
         if (inRunningDirect || inRunningTemplate) {
-            throw new BadRequestException("Cannot delete attachment because it is being used by an active running campaign.");
+            boolean activelyDispatching = false;
+            List<Campaign> running = campaignRepository.findByStatusIn(List.of(CampaignStatus.RUNNING));
+            for (Campaign c : running) {
+                if (campaignDispatcher.isActivelyDispatching(c.getId())) {
+                    activelyDispatching = true;
+                    break;
+                }
+            }
+            if (activelyDispatching) {
+                throw new BadRequestException("Cannot delete attachment because it is being used by an actively running campaign. Please pause or cancel the campaign first.");
+            }
         }
 
         String storagePath = attachment.getStoragePath();
-        String originalName = attachment.getOriginalFileName();
 
-        // Delete from database
+        // 1. Remove join table associations so foreign key constraints do not fail
+        attachmentRepository.deleteFromCampaignAttachments(attachmentId);
+        attachmentRepository.deleteFromTemplateAttachments(attachmentId);
+
+        // 2. Delete from database
         attachmentRepository.delete(attachment);
 
-        // Delete from Supabase Storage
+        // 3. Delete from Supabase Storage
         try {
             storageService.delete(storagePath);
         } catch (Exception e) {

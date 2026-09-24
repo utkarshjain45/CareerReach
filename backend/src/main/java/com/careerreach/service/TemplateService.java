@@ -124,10 +124,10 @@ public class TemplateService {
 
     @Transactional
     public void deleteTemplate(UUID userId, UUID templateId) {
-        int deleted = templateRepository.deleteByIdAndUserId(templateId, userId);
-        if (deleted == 0) {
-            throw new ResourceNotFoundException("Template not found or access denied");
-        }
+        EmailTemplate template = templateRepository.findByIdAndUserId(templateId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Template not found or access denied"));
+        templateRepository.deleteTemplateAttachments(templateId);
+        templateRepository.delete(template);
     }
 
     @Transactional(readOnly = true)

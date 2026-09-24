@@ -27,6 +27,10 @@ public interface EmailTemplateRepository extends JpaRepository<EmailTemplate, UU
     long countByUserId(UUID userId);
 
     @Modifying
+    @Query(value = "DELETE FROM template_attachments WHERE template_id = :templateId", nativeQuery = true)
+    void deleteTemplateAttachments(@Param("templateId") UUID templateId);
+
+    @Modifying
     @Query("DELETE FROM EmailTemplate t WHERE t.user.id = :userId AND t.id = :id")
     int deleteByIdAndUserId(@Param("id") UUID id, @Param("userId") UUID userId);
 }

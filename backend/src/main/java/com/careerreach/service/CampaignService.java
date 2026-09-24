@@ -355,10 +355,17 @@ public class CampaignService {
         Campaign campaign = campaignRepository.findByIdAndUserId(campaignId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
 
-        if (campaign.getStatus() == CampaignStatus.RUNNING) {
-            throw new BadRequestException("Cannot delete a running campaign. Please pause or cancel it first.");
+        if (campaign.getStatus() == CampaignStatus.RUNNING && campaignDispatcher.isActivelyDispatching(campaignId)) {
+            throw new BadRequestException("Cannot delete an actively running campaign. Please pause or cancel it first.");
         }
 
-        campaignRepository.deleteByIdAndUserId(campaignId, userId);
+        // 1. Delete join table associations in campaign_attachments
+        campaignRepository.deleteCampaignAttachments(campaignId);
+
+        // 2. Delete all campaign recipients
+        recipientRepository.deleteByCampaignId(campaignId);
+
+        // 3. Delete the campaign entity
+        campaignRepository.delete(campaign);
     }
 }
