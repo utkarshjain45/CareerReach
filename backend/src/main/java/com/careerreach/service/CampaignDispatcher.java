@@ -139,8 +139,12 @@ public class CampaignDispatcher {
                             campaignId, CampaignRecipientStatus.PENDING);
 
                     if (pendingList.isEmpty()) {
-                        log.info("Campaign {} has no more pending recipients, marking COMPLETED", campaignId);
-                        campaign.setStatus(CampaignStatus.COMPLETED);
+                        log.info("Campaign {} has no more pending recipients, finalizing status", campaignId);
+                        if (campaign.getSentCount() == 0 && campaign.getFailedCount() > 0) {
+                            campaign.setStatus(CampaignStatus.FAILED);
+                        } else {
+                            campaign.setStatus(CampaignStatus.COMPLETED);
+                        }
                         campaign.setCompletedAt(LocalDateTime.now());
                         campaignRepository.save(campaign);
                         break;

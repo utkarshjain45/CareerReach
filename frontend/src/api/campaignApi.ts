@@ -72,4 +72,9 @@ export const campaignApi = {
     const res = await apiClient.delete<ApiResponse<void>>(`/campaigns/${id}`);
     return res.data;
   },
+
+  retryFailedCampaign: async (id: string): Promise<ApiResponse<Campaign>> => {
+    const res = await apiClient.post<ApiResponse<Campaign>>(`/campaigns/${id}/retry-failed`);
+    return res.data;
+  },
 };

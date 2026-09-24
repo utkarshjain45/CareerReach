@@ -97,6 +97,15 @@ public class CampaignController {
         return ResponseEntity.ok(ApiResponse.success("Campaign resumed", campaign));
     }
 
+    @PostMapping("/{id}/retry-failed")
+    public ResponseEntity<ApiResponse<CampaignResponse>> retryFailed(
+            @AuthenticationPrincipal UserPrincipal currentUser,
+            @PathVariable UUID id) {
+
+        CampaignResponse campaign = campaignService.retryFailedRecipients(currentUser.getId(), id);
+        return ResponseEntity.ok(ApiResponse.success("Retrying failed recipients", campaign));
+    }
+
     @PostMapping("/{id}/cancel")
     public ResponseEntity<ApiResponse<CampaignResponse>> cancelCampaign(
             @AuthenticationPrincipal UserPrincipal currentUser,

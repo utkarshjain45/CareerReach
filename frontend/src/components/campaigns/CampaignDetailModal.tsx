@@ -19,6 +19,7 @@ import {
   MailCheck,
   Paperclip,
   FileText,
+  RotateCw,
 } from 'lucide-react';
 
 interface CampaignDetailModalProps {
@@ -136,6 +137,21 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
     }
   };
 
+  const handleRetryFailed = async () => {
+    if (!campaignId) return;
+    setActionLoading(true);
+    try {
+      await campaignApi.retryFailedCampaign(campaignId);
+      toast.success('Retrying failed recipients...');
+      fetchDetail();
+      onUpdate();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to retry failed recipients');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   const campaign = detail?.campaign;
@@ -144,14 +160,6 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
   const total = campaign?.totalRecipients || 1;
   const processed = (campaign?.sentCount || 0) + (campaign?.failedCount || 0);
   const progressPercent = Math.min(100, Math.round((processed / total) * 100));
-
-  const totalAttempted = (campaign?.sentCount || 0) + (campaign?.failedCount || 0);
-  const successRate = totalAttempted > 0
-    ? (((campaign?.sentCount || 0) / totalAttempted) * 100).toFixed(1)
-    : '0.0';
-  const failureRate = totalAttempted > 0
-    ? (((campaign?.failedCount || 0) / totalAttempted) * 100).toFixed(1)
-    : '0.0';
 
   const formatDuration = (start?: string | null, end?: string | null): string => {
     if (!start) return 'Not started';
@@ -284,6 +292,18 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
                 </button>
               )}
 
+              {campaign.failedCount > 0 && campaign.status !== 'RUNNING' && (
+                <button
+                  type="button"
+                  onClick={handleRetryFailed}
+                  disabled={actionLoading}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold rounded-xl text-white bg-brand-600 hover:bg-brand-700 transition-all shadow-xs disabled:opacity-50"
+                >
+                  <RotateCw className="w-3.5 h-3.5" />
+                  Resend Failed ({campaign.failedCount})
+                </button>
+              )}
+
               {(campaign.status === 'RUNNING' || campaign.status === 'PAUSED') && (
                 <button
                   type="button"
@@ -367,7 +387,7 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
               </div>
               <div className="text-2xl font-black text-emerald-700 tracking-tight">{campaign.sentCount}</div>
               <span className="text-[11px] text-emerald-600 font-semibold block mt-1">
-                {successRate}% success rate
+                Successfully sent
               </span>
             </div>
 
@@ -379,7 +399,7 @@ export const CampaignDetailModal: React.FC<CampaignDetailModalProps> = ({
               </div>
               <div className="text-2xl font-black text-rose-700 tracking-tight">{campaign.failedCount}</div>
               <span className="text-[11px] text-rose-600 font-semibold block mt-1">
-                {failureRate}% failure rate
+                Delivery errors
               </span>
             </div>
 

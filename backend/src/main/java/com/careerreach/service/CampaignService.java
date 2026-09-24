@@ -312,6 +312,44 @@ public class CampaignService {
         return CampaignResponse.fromEntity(campaign);
     }
 
+    @Transactional
+    public CampaignResponse retryFailedRecipients(UUID userId, UUID campaignId) {
+        Campaign campaign = campaignRepository.findByIdAndUserId(campaignId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
+
+        if (!gmailConnectionRepository.existsByUserId(userId)) {
+            throw new BadRequestException("Please connect your Gmail account before launching outreach.");
+        }
+
+        if (campaign.getStatus() == CampaignStatus.RUNNING && campaignDispatcher.isActivelyDispatching(campaignId)) {
+            throw new BadRequestException("Campaign is already actively running.");
+        }
+
+        List<CampaignRecipient> failedRecipients = recipientRepository.findByCampaignIdAndStatus(
+                campaignId, CampaignRecipientStatus.FAILED);
+
+        if (failedRecipients.isEmpty()) {
+            throw new BadRequestException("No failed recipients found to retry in this campaign.");
+        }
+
+        int count = failedRecipients.size();
+        for (CampaignRecipient r : failedRecipients) {
+            r.setStatus(CampaignRecipientStatus.PENDING);
+            r.setErrorMessage(null);
+            r.setSentAt(null);
+        }
+        recipientRepository.saveAll(failedRecipients);
+
+        campaign.setFailedCount(Math.max(0, campaign.getFailedCount() - count));
+        campaign.setStatus(CampaignStatus.RUNNING);
+        campaign = campaignRepository.saveAndFlush(campaign);
+
+        triggerAsyncDispatch(campaign.getId());
+
+        log.info("Retrying {} failed recipient(s) for campaign {}", count, campaignId);
+        return CampaignResponse.fromEntity(campaign);
+    }
+
     private void triggerAsyncDispatch(UUID campaignId) {
         if (TransactionSynchronizationManager.isActualTransactionActive()) {
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {

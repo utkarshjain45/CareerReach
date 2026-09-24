@@ -7,6 +7,7 @@ import {
   Eye,
   Trash2,
   RefreshCw,
+  RotateCw,
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { Badge } from '../components/common/Badge';
@@ -100,6 +101,17 @@ export const CampaignsPage: React.FC = () => {
       fetchCampaigns();
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Failed to resume campaign');
+    }
+  };
+
+  const handleRetryFailed = async (campaign: Campaign, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await campaignApi.retryFailedCampaign(campaign.id);
+      toast.success('Retrying failed recipients...');
+      fetchCampaigns();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to retry failed recipients');
     }
   };
 
@@ -206,10 +218,12 @@ export const CampaignsPage: React.FC = () => {
                     <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${
-                          camp.status === 'COMPLETED'
-                            ? 'bg-emerald-500'
-                            : camp.status === 'FAILED'
+                          camp.status === 'FAILED' || (camp.sentCount === 0 && camp.failedCount > 0)
                             ? 'bg-rose-500'
+                            : camp.status === 'COMPLETED'
+                            ? camp.failedCount > 0
+                              ? 'bg-amber-500'
+                              : 'bg-emerald-500'
                             : 'bg-brand-600'
                         }`}
                         style={{ width: `${progressPercent}%` }}
@@ -218,7 +232,7 @@ export const CampaignsPage: React.FC = () => {
                   </div>
 
                   {/* Counters */}
-                  <div className="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-center text-xs">
+                  <div className="grid grid-cols-4 gap-1.5 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-center text-xs">
                     <div>
                       <span className="text-[10px] uppercase font-semibold text-slate-400 block">
                         Total
@@ -232,10 +246,16 @@ export const CampaignsPage: React.FC = () => {
                       <span className="font-bold text-emerald-700">{camp.sentCount}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-semibold text-amber-600 block">
+                      <span className="text-[10px] uppercase font-semibold text-rose-600 block">
+                        Failed
+                      </span>
+                      <span className="font-bold text-rose-700">{camp.failedCount}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-semibold text-slate-500 block">
                         Pending
                       </span>
-                      <span className="font-bold text-amber-700">{camp.pendingCount}</span>
+                      <span className="font-bold text-slate-700">{camp.pendingCount}</span>
                     </div>
                   </div>
                 </div>
@@ -274,6 +294,16 @@ export const CampaignsPage: React.FC = () => {
                         title="Resume Campaign"
                       >
                         <Play className="w-4 h-4 text-emerald-600" />
+                      </button>
+                    )}
+
+                    {camp.failedCount > 0 && camp.status !== 'RUNNING' && (
+                      <button
+                        onClick={(e) => handleRetryFailed(camp, e)}
+                        className="p-1.5 text-slate-600 hover:text-brand-600 hover:bg-white rounded-lg transition-colors border border-transparent hover:border-slate-200"
+                        title={`Resend Failed (${camp.failedCount})`}
+                      >
+                        <RotateCw className="w-4 h-4 text-brand-600" />
                       </button>
                     )}
 
