@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import {
   Mail,
   ArrowRight,
@@ -16,6 +16,13 @@ import {
 import { Button } from '../components/common/Button';
 
 export const LandingPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
+
+  // If redirected from Google OAuth to root domain, forward client-side to /settings
+  if (searchParams.get('code') || searchParams.get('error')) {
+    return <Navigate to={`/settings${window.location.search}`} replace />;
+  }
+
   return (
     <div className="min-h-screen bg-white text-slate-900 flex flex-col selection:bg-brand-600 selection:text-white">
       {/* Top Navbar */}

@@ -65,8 +65,19 @@ export const SettingsPage: React.FC = () => {
   // Gmail Status State
   const [gmailStatus, setGmailStatus] = useState<GmailConnectionDto | null>(null);
   const [loadingGmail, setLoadingGmail] = useState<boolean>(false);
+  const [connectingGmail, setConnectingGmail] = useState<boolean>(false);
   const [disconnectConfirmOpen, setDisconnectConfirmOpen] = useState<boolean>(false);
   const [disconnecting, setDisconnecting] = useState<boolean>(false);
+
+  // Reset any stuck loading state if page is restored from browser back-forward cache
+  useEffect(() => {
+    const handlePageShow = () => {
+      setConnectingGmail(false);
+      setLoadingGmail(false);
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
 
   useEffect(() => {
     if (user?.name) setProfileName(user.name);
@@ -82,6 +93,9 @@ export const SettingsPage: React.FC = () => {
 
     if (error) {
       setActiveTab('gmail');
+      setLoadingGmail(false);
+      setConnectingGmail(false);
+      oauthHandledRef.current = false;
       toast.error(`Google authorization error: ${error}`);
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
@@ -102,8 +116,10 @@ export const SettingsPage: React.FC = () => {
         } catch (err: any) {
           const msg = err.response?.data?.message || 'Failed to complete Google OAuth connection.';
           toast.error(msg);
+          oauthHandledRef.current = false;
         } finally {
           setLoadingGmail(false);
+          setConnectingGmail(false);
           // Remove query params from address bar so page refresh doesn't re-submit used code
           window.history.replaceState({}, document.title, window.location.pathname);
         }
@@ -242,13 +258,18 @@ export const SettingsPage: React.FC = () => {
   };
 
   const handleConnectGmail = async () => {
+    setConnectingGmail(true);
     try {
       const res = await gmailApi.getAuthUrl();
       if (res.data?.authUrl) {
         window.location.href = res.data.authUrl;
+      } else {
+        toast.error('Failed to obtain Google authorization URL');
+        setConnectingGmail(false);
       }
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Failed to initialize Google OAuth');
+      setConnectingGmail(false);
     }
   };
 
@@ -280,33 +301,30 @@ export const SettingsPage: React.FC = () => {
       <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs font-semibold">
         <button
           onClick={() => setActiveTab('profile')}
-          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${
-            activeTab === 'profile'
+          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${activeTab === 'profile'
               ? 'bg-brand-600 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <UserIcon className="w-4 h-4" /> Profile &amp; Security
         </button>
 
         <button
           onClick={() => setActiveTab('gmail')}
-          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${
-            activeTab === 'gmail'
+          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${activeTab === 'gmail'
               ? 'bg-brand-600 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <Mail className="w-4 h-4" /> Gmail Integration
         </button>
 
         <button
           onClick={() => setActiveTab('preferences')}
-          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${
-            activeTab === 'preferences'
+          className={`px-4 py-2 rounded-xl transition-all flex items-center gap-2 ${activeTab === 'preferences'
               ? 'bg-brand-600 text-white shadow-xs'
               : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-          }`}
+            }`}
         >
           <Sliders className="w-4 h-4" /> Sending Preferences
         </button>
@@ -394,11 +412,10 @@ export const SettingsPage: React.FC = () => {
                       if (!newLinkUrl) setNewLinkUrl(preset.placeholder);
                       setShowAddLinkForm(true);
                     }}
-                    className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
-                      alreadyAdded
+                    className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${alreadyAdded
                         ? 'bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed'
                         : 'bg-white text-slate-600 border-slate-200 hover:border-brand-300 hover:text-brand-600 hover:bg-brand-50/50 cursor-pointer'
-                    }`}
+                      }`}
                   >
                     + {preset.name}
                   </button>
@@ -595,7 +612,11 @@ export const SettingsPage: React.FC = () => {
               </p>
             </div>
 
-            {gmailStatus?.connected ? (
+            {loadingGmail ? (
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-500 animate-pulse flex items-center gap-1.5">
+                Checking...
+              </span>
+            ) : gmailStatus?.connected ? (
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Connected
               </span>
@@ -621,7 +642,7 @@ export const SettingsPage: React.FC = () => {
                     variant="outline"
                     size="sm"
                     onClick={handleConnectGmail}
-                    loading={loadingGmail}
+                    loading={connectingGmail}
                     icon={<RefreshCw className="w-3.5 h-3.5" />}
                   >
                     Reconnect
@@ -642,7 +663,7 @@ export const SettingsPage: React.FC = () => {
               <p className="text-xs text-slate-600 max-w-md mx-auto">
                 No Gmail account is connected to this profile. Connect your Gmail to authorize sending outreach campaigns.
               </p>
-              <Button variant="primary" size="sm" onClick={handleConnectGmail} loading={loadingGmail} icon={<Mail className="w-4 h-4" />}>
+              <Button variant="primary" size="sm" onClick={handleConnectGmail} loading={connectingGmail} icon={<Mail className="w-4 h-4" />}>
                 Connect Gmail Account
               </Button>
             </div>

@@ -44,6 +44,12 @@ export const GmailConnectPage: React.FC = () => {
 
   useEffect(() => {
     fetchStatus();
+    const handlePageShow = () => {
+      setConnecting(false);
+      setLoading(false);
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
   }, []);
 
   // Handle Google OAuth callback if redirected to /gmail-connect?code=...
@@ -54,6 +60,9 @@ export const GmailConnectPage: React.FC = () => {
 
     if (error) {
       toast.error(`Google authorization error: ${error}`);
+      setConnecting(false);
+      setLoading(false);
+      oauthHandledRef.current = false;
       window.history.replaceState({}, document.title, window.location.pathname);
       return;
     }
@@ -72,8 +81,10 @@ export const GmailConnectPage: React.FC = () => {
         } catch (err: any) {
           const msg = err.response?.data?.message || 'Failed to connect Gmail account';
           toast.error(msg);
+          oauthHandledRef.current = false;
         } finally {
           setLoading(false);
+          setConnecting(false);
           window.history.replaceState({}, document.title, window.location.pathname);
         }
       };
@@ -89,6 +100,9 @@ export const GmailConnectPage: React.FC = () => {
       if (res.data?.authUrl) {
         // Redirect browser to Google's official OAuth consent screen
         window.location.href = res.data.authUrl;
+      } else {
+        toast.error('Could not initiate Google OAuth flow.');
+        setConnecting(false);
       }
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Could not initiate Google OAuth flow.');
