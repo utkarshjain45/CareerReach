@@ -3,6 +3,7 @@
 # 🚀 CareerReach
 ### High-Deliverability Cold Outreach & Recruiter Personalization Platform
 
+[![Live App](https://img.shields.io/badge/Live_App-careerreach.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://careerreach.vercel.app/)
 [![Java 21](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)](https://openjdk.org/)
 [![Spring Boot 3.4.2](https://img.shields.io/badge/Spring_Boot-3.4.2-6DB33F?style=for-the-badge&logo=spring-boot&logoColor=white)](https://spring.io/projects/spring-boot)
 [![React 18](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
@@ -16,6 +17,13 @@
   Personalize recruiter outreach, auto-inject dynamic profile links, attach verified resume PDFs, and deliver directly to primary inboxes through your authentic Google account.
 </p>
 
+<p align="center">
+  <a href="https://careerreach.vercel.app/" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_Visit_Live_App-careerreach.vercel.app-2563EB?style=for-the-badge&logoColor=white" alt="Live Demo" />
+  </a>
+</p>
+
+[🌐 Live App](https://careerreach.vercel.app/) •
 [Key Features](#-key-features) •
 [Why CareerReach](#-why-careerreach) •
 [System Architecture](#-system-architecture) •
@@ -147,6 +155,8 @@ graph TD
 ---
 
 ## 🚀 Quickstart Guide
+
+> 💡 **Try it without local setup:** The production web app is deployed live at **[https://careerreach.vercel.app/](https://careerreach.vercel.app/)**.
 
 ### Prerequisites
 * **Java:** JDK 21+
