@@ -90,14 +90,14 @@ export const HowItWorksPage: React.FC = () => {
           <div className="flex-1 space-y-4">
             <div className="flex flex-wrap items-center gap-3">
               <h3 className="text-xl sm:text-2xl font-bold text-slate-900">
-                Craft Pitch or Pick from 10+ Role Blueprints
+                Craft Pitch or Pick from Role Templates
               </h3>
               <span className="px-2.5 py-0.5 rounded-full bg-coral-50 text-coral-700 text-xs font-bold border border-coral-100">
-                10+ Pre-Made Templates
+                Curated Templates
               </span>
             </div>
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              Don’t want to write from scratch? Browse our curated library of 10+ ready-to-use blueprints for Full Stack, Frontend, Backend Systems, DevOps/SRE, AI/ML, Mobile, and Internships. Add them directly to your account with a single click, and leverage auto-injected <code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs font-bold">&#123;&#123;github&#125;&#125;</code> and <code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs font-bold">&#123;&#123;leetcode&#125;&#125;</code> platform links saved in Settings.
+              Don’t want to write from scratch? Browse our curated library of ready-to-use templates tailored for Full Stack, Frontend, Backend Systems, DevOps/SRE, AI/ML, Mobile, and Internships. Add them directly to your account with a single click, and leverage auto-injected <code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs font-bold">&#123;&#123;github&#125;&#125;</code> and <code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs font-bold">&#123;&#123;leetcode&#125;&#125;</code> platform links saved in Settings.
             </p>
 
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2 text-xs">

@@ -130,7 +130,7 @@ export const TemplatesPage: React.FC = () => {
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">Email Templates</h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Compose and manage personalized outreach messages or browse curated blueprints for specific roles.
+            Compose and manage personalized outreach messages or browse curated templates for specific roles.
           </p>
         </div>
 
@@ -201,7 +201,7 @@ export const TemplatesPage: React.FC = () => {
           <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
             activeTab === 'role-library' ? 'bg-white/20 text-white' : 'bg-brand-100 text-brand-800'
           }`}>
-            10 Curated
+            Curated
           </span>
         </button>
       </div>
@@ -269,7 +269,7 @@ export const TemplatesPage: React.FC = () => {
             description={
               search
                 ? `No templates match "${search}". Try another search query.`
-                : 'Create your first personalized email template or pick from our curated role-based blueprints.'
+                : 'Create your first personalized email template or pick from our curated role-based templates.'
             }
             actionLabel="Create Custom Template"
             onAction={handleCreate}
@@ -282,7 +282,7 @@ export const TemplatesPage: React.FC = () => {
                   Don&apos;t want to write outreach messages from scratch?
                 </span>
                 <span className="text-slate-500 text-xs mt-0.5 block">
-                  We have 10 pre-engineered templates for Full Stack, Frontend, Backend, AI/ML, DevOps, and more.
+                  Browse our pre-engineered templates for Full Stack, Frontend, Backend, AI/ML, DevOps, and more.
                 </span>
               </div>
               <Button

@@ -49,31 +49,29 @@ export const FeaturesPage: React.FC = () => {
 
       {/* Bento Grid: Core Features */}
       <section className="py-8 sm:py-10 px-6 max-w-6xl mx-auto w-full z-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: Double Wide - Smart Spreadsheets */}
-          <div className="md:col-span-2 glass-card p-7 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-white via-white to-brand-50/40">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Card 1: Smart Spreadsheets */}
+          <div className="glass-card p-7 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-white via-white to-brand-50/40">
             <div>
               <div className="w-10 h-10 rounded-2xl bg-brand-500 text-white flex items-center justify-center mb-5 shadow-card">
                 <FileSpreadsheet className="w-5 h-5" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
-                Instant Excel &amp; CSV Contact Ingestion
+                Instant Contact Ingestion
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-xl mb-6">
-                Upload recruiter lists from Excel or CSV files. Automatically detects column headers, verifies email syntax, and filters duplicates with an interactive 10-row preview.
+              <p className="text-sm text-slate-600 leading-relaxed mb-5">
+                Upload recruiter lists from Excel or CSV files. Automatically detects column headers, verifies email syntax, and filters duplicates with an interactive preview.
               </p>
 
-              <div className="p-3.5 bg-white/90 rounded-xl border border-slate-100 shadow-xs flex items-center justify-between text-xs font-mono">
-                <span className="text-slate-700 font-semibold">sarah@stripe.com</span>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs font-sans font-bold">
+              <div className="p-3 bg-white/90 rounded-xl border border-slate-100 shadow-xs flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-700 font-semibold truncate max-w-[130px]">sarah@stripe.com</span>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-sans font-bold">
                   Verified Contact
                 </span>
-                <span className="text-slate-400 hidden sm:inline">Engineering Lead</span>
               </div>
             </div>
-            <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-brand-600">
-              <span>Automatic duplicate deduplication</span>
-              <ChevronRight className="w-4 h-4" />
+            <div className="mt-5 pt-4 border-t border-slate-100/80 text-xs font-semibold text-brand-700 flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-brand-600" /> Automatic duplicate deduplication
             </div>
           </div>
 
@@ -89,23 +87,54 @@ export const FeaturesPage: React.FC = () => {
               <p className="text-sm text-slate-600 leading-relaxed mb-5">
                 No app passwords or SMTP setups. Authorize securely through Google to send directly from your personal mailbox with your verified profile.
               </p>
+
+              <div className="p-3 bg-white/90 rounded-xl border border-slate-100 shadow-xs flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-700 font-semibold">Google OAuth 2.0</span>
+                <span className="px-2 py-0.5 rounded-full bg-coral-50 text-coral-700 text-[11px] font-sans font-bold">
+                  Official API
+                </span>
+              </div>
             </div>
-            <div className="pt-4 border-t border-slate-100/80 text-xs font-semibold text-emerald-700 flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600" /> High deliverability
+            <div className="mt-5 pt-4 border-t border-slate-100/80 text-xs font-semibold text-coral-700 flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-coral-600" /> High deliverability &amp; primary inbox
             </div>
           </div>
 
-          {/* Card 3: Dynamic Template Studio with GitHub & LeetCode */}
+          {/* Card 3: Role-Specific Outreach Templates */}
+          <div className="glass-card p-7 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-white via-white to-indigo-50/40">
+            <div>
+              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-5 shadow-card">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                Role-Specific Templates
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                Don’t want to write emails from scratch? Browse pre-engineered templates for Full Stack, Frontend, Backend Systems, DevOps/SRE, AI/ML, Mobile, and Internships.
+              </p>
+              <div className="flex flex-wrap gap-1.5 text-[11px] font-semibold text-indigo-700">
+                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">Full Stack</span>
+                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">AI / ML</span>
+                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">DevOps</span>
+                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">Intern</span>
+              </div>
+            </div>
+            <div className="mt-5 pt-4 border-t border-slate-100/80 text-xs font-semibold text-indigo-700 flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-indigo-600" /> 1-Click copy directly to your profile
+            </div>
+          </div>
+
+          {/* Card 4: Dynamic Link Variables */}
           <div className="glass-card p-7 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-white via-white to-amber-50/40">
             <div>
               <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center mb-5 shadow-card">
                 <Code2 className="w-5 h-5" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">
-                GitHub &amp; LeetCode Link Variables
+                GitHub &amp; LeetCode Variables
               </h3>
               <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                Save your GitHub, LeetCode, portfolio, and other platform URLs once in Settings. They populate automatically with <code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs font-bold">&#123;&#123;github&#125;&#125;</code> and <code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs font-bold">&#123;&#123;leetcode&#125;&#125;</code> variables so you never have to copy-paste URLs every time.
+                Save your GitHub, LeetCode, portfolio, and other platform URLs once in Settings. They populate automatically with <code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs font-bold">&#123;&#123;github&#125;&#125;</code> and <code className="bg-amber-100 text-amber-900 px-1.5 py-0.5 rounded font-mono text-xs font-bold">&#123;&#123;leetcode&#125;&#125;</code> variables so you never copy-paste URLs.
               </p>
 
               <div className="space-y-1.5 text-xs font-mono">
@@ -124,7 +153,7 @@ export const FeaturesPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Card 4: Resume Cloud Vault */}
+          {/* Card 5: Resume Cloud Vault */}
           <div className="glass-card p-7 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-white via-white to-emerald-50/40">
             <div>
               <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white flex items-center justify-center mb-5 shadow-card">
@@ -136,13 +165,20 @@ export const FeaturesPage: React.FC = () => {
               <p className="text-sm text-slate-600 leading-relaxed mb-5">
                 Store your resume securely in cloud storage. CareerReach automatically encodes and attaches your PDF cleanly to each outgoing email draft.
               </p>
+
+              <div className="p-3 bg-white/90 rounded-xl border border-slate-100 shadow-xs flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-700 font-semibold truncate max-w-[130px]">Resume_2026.pdf</span>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-sans font-bold">
+                  PDF Attached
+                </span>
+              </div>
             </div>
-            <div className="pt-4 border-t border-slate-100/80 text-xs font-semibold text-emerald-700 flex items-center gap-1.5">
+            <div className="mt-5 pt-4 border-t border-slate-100/80 text-xs font-semibold text-emerald-700 flex items-center gap-1.5">
               <Check className="w-4 h-4 text-emerald-600" /> PDF attached seamlessly
             </div>
           </div>
 
-          {/* Card 5: Sending Controls & Safety */}
+          {/* Card 6: Live Queue Controls */}
           <div className="glass-card p-7 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-white via-white to-violet-50/40">
             <div>
               <div className="w-10 h-10 rounded-2xl bg-brand-600 text-white flex items-center justify-center mb-5 shadow-card">
@@ -154,33 +190,16 @@ export const FeaturesPage: React.FC = () => {
               <p className="text-sm text-slate-600 leading-relaxed mb-5">
                 Full control over your active sequences. Pause midway, inspect recipient status codes, resume smoothly, or stop anytime without ghost sends.
               </p>
-            </div>
-            <div className="pt-4 border-t border-slate-100/80 text-xs font-semibold text-slate-500">
-              Real-time progress logging
-            </div>
-          </div>
 
-          {/* Card 6: 10+ Pre-Engineered Role Blueprints */}
-          <div className="glass-card p-7 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-white via-white to-indigo-50/40">
-            <div>
-              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-5 shadow-card">
-                <Sparkles className="w-5 h-5" />
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">
-                10+ Role Outreach Blueprints
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                Don’t want to write emails from scratch? Browse pre-engineered templates for Full Stack, Frontend, Backend Systems, DevOps/SRE, AI/ML, Mobile, and Internships.
-              </p>
-              <div className="flex flex-wrap gap-1.5 text-[11px] font-semibold text-indigo-700">
-                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">Full Stack</span>
-                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">AI / ML</span>
-                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">DevOps</span>
-                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">Intern</span>
+              <div className="p-3 bg-white/90 rounded-xl border border-slate-100 shadow-xs flex items-center justify-between text-xs font-mono">
+                <span className="text-slate-700 font-semibold">Active Dispatch</span>
+                <span className="px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 text-[11px] font-sans font-bold">
+                  Pause &amp; Resume
+                </span>
               </div>
             </div>
-            <div className="mt-5 pt-4 border-t border-slate-100/80 text-xs font-semibold text-indigo-700 flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-indigo-600" /> 1-Click copy directly to your profile
+            <div className="mt-5 pt-4 border-t border-slate-100/80 text-xs font-semibold text-brand-700 flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-brand-600" /> Real-time progress logging &amp; safety
             </div>
           </div>
         </div>

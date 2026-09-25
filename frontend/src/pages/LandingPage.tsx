@@ -93,7 +93,7 @@ export const LandingPage: React.FC = () => {
       <section className="relative pt-6 sm:pt-10 lg:pt-14 pb-10 sm:pb-14 px-6 text-center max-w-5xl mx-auto z-10">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/70 text-brand-700 text-xs font-bold shadow-xs mb-5">
           <Sparkles className="w-3.5 h-3.5 text-brand-600" />
-          <span>New: 10+ Pre-Made Role Blueprints (Full Stack, AI/ML, DevOps, Intern &amp; more)</span>
+          <span>Curated Role-Based Templates (Full Stack, AI/ML, DevOps, Intern &amp; more)</span>
         </div>
 
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.12] max-w-4xl mx-auto">
@@ -522,7 +522,7 @@ export const LandingPage: React.FC = () => {
                 Full Feature Suite &amp; Role Templates
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
-                Inspect our 10+ role-tailored blueprints (Full Stack, Frontend, DevOps, AI), contact parser, dynamic link variables, and live campaign queue controls.
+                Inspect our curated role templates (Full Stack, Frontend, DevOps, AI), contact parser, dynamic link variables, and live campaign queue controls.
               </p>
             </div>
             <Link

@@ -291,7 +291,7 @@ export const DashboardPage: React.FC = () => {
                     Role Template Library
                   </span>
                   <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-brand-100 text-brand-800">
-                    10 Ready
+                    Curated
                   </span>
                 </div>
                 <span className="text-[11px] text-slate-500 truncate block">

@@ -90,13 +90,13 @@ export const RoleTemplateLibrary: React.FC<RoleTemplateLibraryProps> = ({
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold text-white mb-3">
             <Sparkles className="w-3.5 h-3.5" />
-            Curated Cold Outreach Blueprints
+            Curated Cold Outreach Templates
           </div>
           <h2 className="text-xl sm:text-2xl font-black tracking-tight text-white leading-snug">
             Role-Specific Email Templates
           </h2>
           <p className="mt-1.5 text-xs sm:text-sm text-white/90 leading-relaxed">
-            Engineered specifically for engineering, AI/ML, DevOps, and product roles. Each blueprint incorporates dynamic variables (such as <code className="bg-white/25 px-1 py-0.5 rounded font-mono font-bold text-[11px]">&#123;&#123;github&#125;&#125;</code> and <code className="bg-white/25 px-1 py-0.5 rounded font-mono font-bold text-[11px]">&#123;&#123;leetcode&#125;&#125;</code>) so you can add them to your profile and deploy high-converting campaigns instantly.
+            Engineered specifically for engineering, AI/ML, DevOps, and product roles. Each template incorporates dynamic variables (such as <code className="bg-white/25 px-1 py-0.5 rounded font-mono font-bold text-[11px]">&#123;&#123;github&#125;&#125;</code> and <code className="bg-white/25 px-1 py-0.5 rounded font-mono font-bold text-[11px]">&#123;&#123;leetcode&#125;&#125;</code>) so you can add them to your profile and deploy high-converting campaigns instantly.
           </p>
         </div>
       </div>
@@ -141,7 +141,7 @@ export const RoleTemplateLibrary: React.FC<RoleTemplateLibraryProps> = ({
             Showing <strong className="text-slate-700 font-bold">{filteredTemplates.length}</strong> role-ready template{filteredTemplates.length === 1 ? '' : 's'}
           </span>
           <span className="text-[11px] text-slate-400">
-            Click &quot;Add to My Templates&quot; to copy any blueprint directly into your profile
+            Click &quot;Add to My Templates&quot; to copy any template directly into your profile
           </span>
         </div>
       </div>
