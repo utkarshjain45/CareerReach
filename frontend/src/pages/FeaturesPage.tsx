@@ -14,6 +14,7 @@ import {
   ExternalLink,
   ArrowRight,
   Zap,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '../components/common/Button';
 import { MarketingHeader } from '../components/layout/MarketingHeader';
@@ -156,6 +157,30 @@ export const FeaturesPage: React.FC = () => {
             </div>
             <div className="pt-4 border-t border-slate-100/80 text-xs font-semibold text-slate-500">
               Real-time progress logging
+            </div>
+          </div>
+
+          {/* Card 6: 10+ Pre-Engineered Role Blueprints */}
+          <div className="glass-card p-7 sm:p-8 flex flex-col justify-between bg-gradient-to-br from-white via-white to-indigo-50/40">
+            <div>
+              <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center mb-5 shadow-card">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 mb-2">
+                10+ Role Outreach Blueprints
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed mb-4">
+                Don’t want to write emails from scratch? Browse pre-engineered templates for Full Stack, Frontend, Backend Systems, DevOps/SRE, AI/ML, Mobile, and Internships.
+              </p>
+              <div className="flex flex-wrap gap-1.5 text-[11px] font-semibold text-indigo-700">
+                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">Full Stack</span>
+                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">AI / ML</span>
+                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">DevOps</span>
+                <span className="px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-100">Intern</span>
+              </div>
+            </div>
+            <div className="mt-5 pt-4 border-t border-slate-100/80 text-xs font-semibold text-indigo-700 flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-indigo-600" /> 1-Click copy directly to your profile
             </div>
           </div>
         </div>

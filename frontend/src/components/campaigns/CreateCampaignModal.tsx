@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Modal } from '../common/Modal';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
@@ -333,8 +334,15 @@ export const CreateCampaignModal: React.FC<CreateCampaignModalProps> = ({
                 Select Outreach Template *
               </label>
               {templates.length === 0 ? (
-                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800">
-                  No templates found. Please create an email template first.
+                <div className="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <span>No templates found in your profile yet.</span>
+                  <Link
+                    to="/templates"
+                    onClick={onClose}
+                    className="inline-flex items-center gap-1 font-bold text-brand-600 hover:text-brand-700 underline shrink-0"
+                  >
+                    Browse Role Template Library &rarr;
+                  </Link>
                 </div>
               ) : (
                 <Select

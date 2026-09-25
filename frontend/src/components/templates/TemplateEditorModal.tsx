@@ -28,6 +28,7 @@ interface TemplateEditorModalProps {
   onClose: () => void;
   onSuccess: () => void;
   templateToEdit?: EmailTemplate | null;
+  initialValues?: Partial<TemplateRequest> | null;
 }
 
 const SUPPORTED_VARIABLES = ['name', 'company', 'position', 'email'];
@@ -37,6 +38,7 @@ export const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
   onClose,
   onSuccess,
   templateToEdit,
+  initialValues,
 }) => {
   const [formData, setFormData] = useState<TemplateRequest>({
     name: '',
@@ -108,6 +110,13 @@ export const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
       } else {
         setSelectedAttachmentIds([]);
       }
+    } else if (initialValues) {
+      setFormData({
+        name: initialValues.name || '',
+        subject: initialValues.subject || '',
+        body: initialValues.body || '',
+      });
+      setSelectedAttachmentIds(initialValues.attachmentIds || []);
     } else {
       setFormData({
         name: '',
@@ -118,7 +127,7 @@ export const TemplateEditorModal: React.FC<TemplateEditorModalProps> = ({
     }
     setErrors({});
     setActiveTab('compose');
-  }, [templateToEdit, isOpen]);
+  }, [templateToEdit, initialValues, isOpen]);
 
   // Dynamic variables including custom social links
   const allSupportedVariables = [

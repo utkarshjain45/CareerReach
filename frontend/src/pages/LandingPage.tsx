@@ -91,6 +91,11 @@ export const LandingPage: React.FC = () => {
 
       {/* Hero Section */}
       <section className="relative pt-6 sm:pt-10 lg:pt-14 pb-10 sm:pb-14 px-6 text-center max-w-5xl mx-auto z-10">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/70 text-brand-700 text-xs font-bold shadow-xs mb-5">
+          <Sparkles className="w-3.5 h-3.5 text-brand-600" />
+          <span>New: 10+ Pre-Made Role Blueprints (Full Stack, AI/ML, DevOps, Intern &amp; more)</span>
+        </div>
+
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.12] max-w-4xl mx-auto">
           Skip the job board black hole.{' '}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 via-indigo-600 to-coral-500">
@@ -514,10 +519,10 @@ export const LandingPage: React.FC = () => {
                 <FileSpreadsheet className="w-5 h-5" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">
-                Full Feature Suite
+                Full Feature Suite &amp; Role Templates
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
-                Inspect our Excel &amp; CSV contact parser, dynamic link variable injection, cloud resume storage, and live campaign queue controls.
+                Inspect our 10+ role-tailored blueprints (Full Stack, Frontend, DevOps, AI), contact parser, dynamic link variables, and live campaign queue controls.
               </p>
             </div>
             <Link

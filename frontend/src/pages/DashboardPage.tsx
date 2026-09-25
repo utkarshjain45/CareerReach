@@ -280,17 +280,22 @@ export const DashboardPage: React.FC = () => {
 
             <Link
               to="/templates"
-              className="flex items-center gap-3.5 p-3 rounded-xl hover:bg-white hover:shadow-xs transition-all group"
+              className="flex items-center gap-3.5 p-3 rounded-xl bg-gradient-to-r from-brand-50/70 to-indigo-50/50 hover:from-brand-100/70 hover:to-indigo-100/60 border border-brand-100/80 transition-all group"
             >
-              <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <FileText className="w-4 h-4" />
+              <div className="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-xs">
+                <Sparkles className="w-4 h-4" />
               </div>
-              <div>
-                <span className="block font-bold text-xs text-slate-900 group-hover:text-brand-600 transition-colors">
-                  Email Templates
-                </span>
-                <span className="text-[11px] text-slate-400">
-                  Compose outreach with dynamic tags
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="block font-bold text-xs text-slate-900 group-hover:text-brand-600 transition-colors">
+                    Role Template Library
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-brand-100 text-brand-800">
+                    10 Ready
+                  </span>
+                </div>
+                <span className="text-[11px] text-slate-500 truncate block">
+                  Full Stack, AI/ML, DevOps, Intern &amp; more
                 </span>
               </div>
             </Link>
