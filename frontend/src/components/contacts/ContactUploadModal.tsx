@@ -293,20 +293,25 @@ export const ContactUploadModal: React.FC<ContactUploadModalProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">
-                  Candidate Name <span className="text-slate-400 font-normal">(Optional)</span>
+                  Candidate / Recruiter Name <span className="text-slate-400 font-normal">(Optional)</span>
                 </label>
                 <select
                   value={columnMapping.name}
                   onChange={(e) => setColumnMapping({ ...columnMapping, name: e.target.value })}
                   className="w-full text-xs rounded-xl border-slate-200 bg-white py-2 px-3 focus:border-brand-500 focus:ring-brand-500"
                 >
-                  <option value="">— Skip / Not in file —</option>
-                  {previewData.headers.map((h) => (
-                    <option key={h} value={h}>
-                      {h}
-                    </option>
-                  ))}
+                  <option value="">— Skip / Auto-detect from Email —</option>
+                  {previewData.headers
+                    .filter((h) => h && h.trim().length > 0)
+                    .map((h) => (
+                      <option key={h} value={h}>
+                        {h}
+                      </option>
+                    ))}
                 </select>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  If left empty, names are intelligently derived from recruiter email addresses.
+                </p>
               </div>
 
               <div>
@@ -321,11 +326,13 @@ export const ContactUploadModal: React.FC<ContactUploadModalProps> = ({
                   }`}
                 >
                   <option value="">— Select Email Column —</option>
-                  {previewData.headers.map((h) => (
-                    <option key={h} value={h}>
-                      {h}
-                    </option>
-                  ))}
+                  {previewData.headers
+                    .filter((h) => h && h.trim().length > 0)
+                    .map((h) => (
+                      <option key={h} value={h}>
+                        {h}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -339,11 +346,13 @@ export const ContactUploadModal: React.FC<ContactUploadModalProps> = ({
                   className="w-full text-xs rounded-xl border-slate-200 bg-white py-2 px-3 focus:border-brand-500 focus:ring-brand-500"
                 >
                   <option value="">— Skip / Not in file —</option>
-                  {previewData.headers.map((h) => (
-                    <option key={h} value={h}>
-                      {h}
-                    </option>
-                  ))}
+                  {previewData.headers
+                    .filter((h) => h && h.trim().length > 0)
+                    .map((h) => (
+                      <option key={h} value={h}>
+                        {h}
+                      </option>
+                    ))}
                 </select>
               </div>
 
@@ -357,11 +366,13 @@ export const ContactUploadModal: React.FC<ContactUploadModalProps> = ({
                   className="w-full text-xs rounded-xl border-slate-200 bg-white py-2 px-3 focus:border-brand-500 focus:ring-brand-500"
                 >
                   <option value="">— Skip / Not in file —</option>
-                  {previewData.headers.map((h) => (
-                    <option key={h} value={h}>
-                      {h}
-                    </option>
-                  ))}
+                  {previewData.headers
+                    .filter((h) => h && h.trim().length > 0)
+                    .map((h) => (
+                      <option key={h} value={h}>
+                        {h}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -384,13 +395,31 @@ export const ContactUploadModal: React.FC<ContactUploadModalProps> = ({
                     <tr className="bg-slate-50 border-b border-slate-100 text-slate-600 font-semibold">
                       {previewData.headers.map((h) => {
                         const isMappedEmail = h === columnMapping.email;
+                        const isMappedCompany = h === columnMapping.company;
+                        const isMappedName = h === columnMapping.name;
+                        const isMappedPosition = h === columnMapping.position;
                         return (
                           <th key={h} className="py-2 px-3 whitespace-nowrap">
                             <div className="flex items-center gap-1">
                               <span>{h}</span>
                               {isMappedEmail && (
-                                <span className="px-1.5 py-0.2 bg-brand-100 text-brand-700 rounded text-[9px]">
+                                <span className="px-1.5 py-0.5 bg-brand-100 text-brand-700 rounded text-[9px] font-semibold">
                                   Email
+                                </span>
+                              )}
+                              {isMappedCompany && (
+                                <span className="px-1.5 py-0.5 bg-indigo-100 text-indigo-700 rounded text-[9px] font-semibold">
+                                  Company
+                                </span>
+                              )}
+                              {isMappedName && (
+                                <span className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[9px] font-semibold">
+                                  Name
+                                </span>
+                              )}
+                              {isMappedPosition && (
+                                <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-[9px] font-semibold">
+                                  Position
                                 </span>
                               )}
                             </div>

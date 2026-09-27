@@ -33,6 +33,12 @@ public class ExcelParserService {
             "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$"
     );
 
+    private static final Set<String> GENERIC_EMAIL_PREFIXES = Set.of(
+            "hr", "careers", "jobs", "recruiter", "recruiting", "recruitment", "talent", "hiring",
+            "info", "contact", "support", "admin", "hello", "team", "office", "apply", "inquiries",
+            "help", "general", "mail", "sales", "marketing"
+    );
+
     public record ParseResult(List<Contact> validContacts, ImportSummaryDto summary) {}
 
     public ImportPreviewResponse previewFile(MultipartFile file) {
@@ -94,8 +100,14 @@ public class ExcelParserService {
             }
 
             Row headerRow = rowIterator.next();
-            for (Cell cell : headerRow) {
-                headers.add(formatter.formatCellValue(cell).trim());
+            int maxCols = Math.max((int) headerRow.getLastCellNum(), 0);
+            for (int i = 0; i < maxCols; i++) {
+                Cell cell = headerRow.getCell(i);
+                String h = cell != null ? formatter.formatCellValue(cell).trim() : "";
+                if (h.isEmpty()) {
+                    h = "[Column " + (i + 1) + "]";
+                }
+                headers.add(h);
             }
 
             while (rowIterator.hasNext()) {
@@ -140,8 +152,12 @@ public class ExcelParserService {
                 throw new BadRequestException("CSV file contains no header or data rows");
             }
 
-            for (String h : headerRow) {
-                headers.add(h.trim());
+            for (int i = 0; i < headerRow.length; i++) {
+                String h = headerRow[i] != null ? headerRow[i].trim() : "";
+                if (h.isEmpty()) {
+                    h = "[Column " + (i + 1) + "]";
+                }
+                headers.add(h);
             }
 
             String[] row;
@@ -305,6 +321,9 @@ public class ExcelParserService {
     private Map<String, String> computeSuggestedMapping(List<String> headers) {
         Map<String, String> mapping = new HashMap<>();
         for (String header : headers) {
+            if (header == null || header.isBlank() || header.startsWith("[Column ")) {
+                continue;
+            }
             ColumnHeaderNormalizer.CanonicalColumn canonical = ColumnHeaderNormalizer.normalize(header);
             if (canonical != ColumnHeaderNormalizer.CanonicalColumn.UNKNOWN) {
                 String key = canonical.name().toLowerCase();
@@ -322,15 +341,23 @@ public class ExcelParserService {
         Map<ColumnHeaderNormalizer.CanonicalColumn, Integer> map = new HashMap<>();
         Map<String, Integer> headerToIdx = new HashMap<>();
 
-        for (Cell cell : headerRow) {
-            String headerText = formatter.formatCellValue(cell).trim();
-            headerToIdx.put(headerText.toLowerCase(), cell.getColumnIndex());
+        int maxCols = Math.max((int) headerRow.getLastCellNum(), 0);
+        for (int i = 0; i < maxCols; i++) {
+            Cell cell = headerRow.getCell(i);
+            String headerText = cell != null ? formatter.formatCellValue(cell).trim() : "";
+            if (!headerText.isBlank()) {
+                headerToIdx.put(headerText.toLowerCase(), i);
+            }
+            headerToIdx.put(("[column " + (i + 1) + "]").toLowerCase(), i);
         }
 
         if (customMapping != null && !customMapping.isEmpty()) {
             for (Map.Entry<String, String> entry : customMapping.entrySet()) {
                 String canonicalKey = entry.getKey().trim().toUpperCase();
                 String targetHeader = entry.getValue() != null ? entry.getValue().trim().toLowerCase() : "";
+                if (targetHeader.isBlank()) {
+                    continue; // Skip unmapped / empty mappings
+                }
                 if (headerToIdx.containsKey(targetHeader)) {
                     try {
                         ColumnHeaderNormalizer.CanonicalColumn col = ColumnHeaderNormalizer.CanonicalColumn.valueOf(canonicalKey);
@@ -340,12 +367,14 @@ public class ExcelParserService {
             }
         }
 
-        // Fill in missing with auto-detection
-        for (Cell cell : headerRow) {
-            String headerText = formatter.formatCellValue(cell).trim();
+        // Fill in missing with auto-detection (skip blank or generated [Column X] headers)
+        for (int i = 0; i < maxCols; i++) {
+            Cell cell = headerRow.getCell(i);
+            String headerText = cell != null ? formatter.formatCellValue(cell).trim() : "";
+            if (headerText.isBlank() || headerText.startsWith("[Column ")) continue;
             ColumnHeaderNormalizer.CanonicalColumn canonical = ColumnHeaderNormalizer.normalize(headerText);
             if (canonical != ColumnHeaderNormalizer.CanonicalColumn.UNKNOWN && !map.containsKey(canonical)) {
-                map.put(canonical, cell.getColumnIndex());
+                map.put(canonical, i);
             }
         }
 
@@ -359,13 +388,20 @@ public class ExcelParserService {
         Map<String, Integer> headerToIdx = new HashMap<>();
 
         for (int i = 0; i < headers.length; i++) {
-            headerToIdx.put(headers[i].trim().toLowerCase(), i);
+            String h = headers[i] != null ? headers[i].trim() : "";
+            if (!h.isBlank()) {
+                headerToIdx.put(h.toLowerCase(), i);
+            }
+            headerToIdx.put(("[column " + (i + 1) + "]").toLowerCase(), i);
         }
 
         if (customMapping != null && !customMapping.isEmpty()) {
             for (Map.Entry<String, String> entry : customMapping.entrySet()) {
                 String canonicalKey = entry.getKey().trim().toUpperCase();
                 String targetHeader = entry.getValue() != null ? entry.getValue().trim().toLowerCase() : "";
+                if (targetHeader.isBlank()) {
+                    continue; // Skip unmapped / empty mappings
+                }
                 if (headerToIdx.containsKey(targetHeader)) {
                     try {
                         ColumnHeaderNormalizer.CanonicalColumn col = ColumnHeaderNormalizer.CanonicalColumn.valueOf(canonicalKey);
@@ -377,7 +413,9 @@ public class ExcelParserService {
 
         // Fill in missing with auto-detection
         for (int i = 0; i < headers.length; i++) {
-            ColumnHeaderNormalizer.CanonicalColumn canonical = ColumnHeaderNormalizer.normalize(headers[i].trim());
+            String h = headers[i] != null ? headers[i].trim() : "";
+            if (h.isBlank() || h.startsWith("[Column ")) continue;
+            ColumnHeaderNormalizer.CanonicalColumn canonical = ColumnHeaderNormalizer.normalize(h);
             if (canonical != ColumnHeaderNormalizer.CanonicalColumn.UNKNOWN && !map.containsKey(canonical)) {
                 map.put(canonical, i);
             }
@@ -447,6 +485,16 @@ public class ExcelParserService {
         String trimmedCompany = company != null ? company.trim() : "";
         String trimmedPosition = position != null ? position.trim() : "";
 
+        // If name is purely digits/serial numbers (e.g. "1", "2", "3", "#1"), reject it
+        if (trimmedName.matches("^#?\\d+$")) {
+            trimmedName = "";
+        }
+
+        // If name is missing or was a serial number, intelligently derive from email address
+        if (trimmedName.isBlank() && !trimmedEmail.isBlank()) {
+            trimmedName = deriveNameFromEmail(trimmedEmail);
+        }
+
         Contact contact = Contact.builder()
                 .user(user)
                 .name(trimmedName)
@@ -457,6 +505,43 @@ public class ExcelParserService {
                 .build();
 
         return new ProcessRowResult(true, false, contact, null);
+    }
+
+    public static String deriveNameFromEmail(String email) {
+        if (email == null || !email.contains("@")) return "Hiring Team";
+        String handle = email.substring(0, email.indexOf('@')).trim();
+        if (handle.isEmpty()) return "Hiring Team";
+
+        // Remove trailing numbers (e.g. swati.sharma11 -> swati.sharma)
+        handle = handle.replaceAll("\\d+$", "");
+
+        // Check if generic handle
+        String cleanHandle = handle.toLowerCase().replaceAll("[^a-z]", "");
+        if (cleanHandle.isEmpty() || GENERIC_EMAIL_PREFIXES.contains(cleanHandle)) {
+            return "Hiring Team";
+        }
+
+        // Split by punctuation: '.', '_', '-', '+'
+        String[] parts = handle.split("[._\\-+]+");
+        List<String> cleanParts = new ArrayList<>();
+        for (String part : parts) {
+            String p = part.replaceAll("[^a-zA-Z]", "").trim();
+            if (!p.isEmpty()) {
+                String capitalized = Character.toUpperCase(p.charAt(0)) + 
+                        (p.length() > 1 ? p.substring(1) : "");
+                cleanParts.add(capitalized);
+            }
+        }
+
+        if (cleanParts.isEmpty()) {
+            return "Hiring Team";
+        }
+
+        String derived = String.join(" ", cleanParts).trim();
+        if (derived.length() < 2) {
+            return "Hiring Team";
+        }
+        return derived;
     }
 
     private String getCellValue(Row row, Integer columnIndex, DataFormatter formatter) {
