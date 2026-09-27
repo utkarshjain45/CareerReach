@@ -64,9 +64,13 @@ public class GmailSenderService {
             String senderName = userRepository.findById(userId)
                     .map(User::getName)
                     .filter(n -> !n.isBlank())
-                    .orElse("Utkarsh Jain");
+                    .orElse(null);
 
-            mimeMessage.setFrom(new InternetAddress(fromEmail, senderName, "UTF-8"));
+            if (senderName != null) {
+                mimeMessage.setFrom(new InternetAddress(fromEmail, senderName, "UTF-8"));
+            } else {
+                mimeMessage.setFrom(new InternetAddress(fromEmail));
+            }
             mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
             mimeMessage.setSubject(subject, "UTF-8");
 
