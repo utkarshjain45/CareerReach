@@ -3,6 +3,8 @@ package com.careerreach.service;
 import com.careerreach.dto.EmailAttachmentPayload;
 import com.careerreach.dto.GmailConnectionDto;
 import com.careerreach.exception.BadRequestException;
+import com.careerreach.entity.User;
+import com.careerreach.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.activation.DataHandler;
 import jakarta.mail.Message;
@@ -29,12 +31,14 @@ public class GmailSenderService {
     private final GmailOAuthService gmailOAuthService;
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
     private static final String GMAIL_SEND_URL = "https://gmail.googleapis.com/gmail/v1/users/me/messages/send";
 
-    public GmailSenderService(GmailOAuthService gmailOAuthService, ObjectMapper objectMapper) {
+    public GmailSenderService(GmailOAuthService gmailOAuthService, ObjectMapper objectMapper, UserRepository userRepository) {
         this.gmailOAuthService = gmailOAuthService;
         this.objectMapper = objectMapper;
+        this.userRepository = userRepository;
         this.restClient = RestClient.builder().build();
     }
 
@@ -57,7 +61,12 @@ public class GmailSenderService {
             Session session = Session.getDefaultInstance(props, null);
             MimeMessage mimeMessage = new MimeMessage(session);
 
-            mimeMessage.setFrom(new InternetAddress(fromEmail));
+            String senderName = userRepository.findById(userId)
+                    .map(User::getName)
+                    .filter(n -> !n.isBlank())
+                    .orElse("Utkarsh Jain");
+
+            mimeMessage.setFrom(new InternetAddress(fromEmail, senderName, "UTF-8"));
             mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
             mimeMessage.setSubject(subject, "UTF-8");
 
